@@ -1,6 +1,6 @@
 /*
 ** Win32 Custom Window Example Program
-**  v1 - April 30th 2020
+**  v1.1 - April 30th 2020
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
@@ -10,12 +10,12 @@
 ** Tested on: Windows 7 aero, Windows 7 classic, Windows 10
 **
 **
-**  This is an example only, it is designed for:
-**   Easy copy-pasting the main components
-**   Learn how and why it works
-**   Build, step through, modify, experiment
+** This is an example only, it is designed for:
+**  Easy copy-pasting the main components
+**  Learn how and why it works
+**  Build, step through, modify, experiment
 **
-**  This example is not designed for use as a library/engine/framework etc.
+** This example is not designed for use as a library/engine/framework etc.
 **
 **
 **  This example *does show* how to create a win32 window where the client area
@@ -330,17 +330,19 @@ CustomBorderWindowProc(HWND   hwnd,
                 int r = 0;
                 int b = 0;
                 int t = 0;
-                if (frame_rect.left <= pos.x && pos.x < frame_rect.left + border_width){
-                    l = 1;
-                }
-                if (frame_rect.right - border_width <= pos.x && pos.x < frame_rect.right){
-                    r = 1;
-                }
-                if (frame_rect.bottom - border_width <= pos.y && pos.y < frame_rect.bottom){
-                    b = 1;
-                }
-                if (frame_rect.top <= pos.y && pos.y < frame_rect.top + border_width){
-                    t = 1;
+                if (!IsZoomed(hwnd)){
+                    if (frame_rect.left <= pos.x && pos.x < frame_rect.left + border_width){
+                        l = 1;
+                    }
+                    if (frame_rect.right - border_width <= pos.x && pos.x < frame_rect.right){
+                        r = 1;
+                    }
+                    if (frame_rect.bottom - border_width <= pos.y && pos.y < frame_rect.bottom){
+                        b = 1;
+                    }
+                    if (frame_rect.top <= pos.y && pos.y < frame_rect.top + border_width){
+                        t = 1;
+                    }
                 }
                 
                 // If the point is in two borders, use the corresponding corner resize.
