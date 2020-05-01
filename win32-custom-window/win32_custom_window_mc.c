@@ -4,7 +4,7 @@
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
-                                  ** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
+** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
 **
 ** Minimal comments version
 **

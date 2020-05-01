@@ -4,7 +4,7 @@
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
-                                  ** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
+** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
 **
 **
 ** Tested on: Windows 7 aero, Windows 7 classic, Windows 10
@@ -20,7 +20,7 @@
 **
 **  This example *does show* how to create a win32 window where the client area
 ** covers the whole area of the window and is an axis aligned rectangle. It shows
- ** how to maintain normal window resizing, moving, and positioning shortcuts like
+** how to maintain normal window resizing, moving, and positioning shortcuts like
 ** WinKey + Arrows for such a window. And it shows how to handle widgets that are
 ** placed inside the caption area of the window.
 **
@@ -35,12 +35,12 @@
 **
 **
 ** Required windows libraries:
- **  User32.lib UxTheme.lib
+**  User32.lib UxTheme.lib
 ** Pragmas versions:
 **  #pragma comment(lib, "User32.lib")
- **  #pragma comment(lib, "UxTheme.lib")
+**  #pragma comment(lib, "UxTheme.lib")
 **
- ** Libraries only for rendering, not required:
+** Libraries only for rendering, not required:
 ** Gdi32.lib Dwmapi.lib
 */
 
