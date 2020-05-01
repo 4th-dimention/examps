@@ -46,6 +46,7 @@
 
 #include <Windows.h>
 #include <Windowsx.h>
+#include <dwmapi.h>
 
 // only for logging, not necessary in copies:
 #include <stdio.h>
@@ -104,6 +105,15 @@ struct Input{
 };
 
 void UpdateAndRender(HWND hwnd, Input *input);
+
+////////////////////////////////
+
+// A handy helper for this example
+
+int
+HitTest(int x, int y, RECT rect){
+    return((rect.left <= x && x < rect.right) && (rect.top <= y && y < rect.bottom));
+}
 
 ////////////////////////////////
 
@@ -599,11 +609,6 @@ WinMain(HINSTANCE hInstance,
 // The implementation of the application tick function which renders the border,
 // inside of the window, embedded widgets, and processes input for both the
 // border and the interior in the same way.
-
-int
-HitTest(int x, int y, RECT rect){
-    return((rect.left <= x && x < rect.right) && (rect.top <= y && y < rect.bottom));
-}
 
 int
 HasEvent(Input *input, Input_Event_Kind kind){

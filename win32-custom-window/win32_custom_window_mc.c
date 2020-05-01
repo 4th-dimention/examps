@@ -12,6 +12,7 @@
 
 #include <Windows.h>
 #include <Windowsx.h>
+#include <dwmapi.h>
 #include <stdio.h>
 
 ////////////////////////////////
@@ -48,6 +49,13 @@ struct Input{
 };
 
 void UpdateAndRender(HWND hwnd, Input *input);
+
+////////////////////////////////
+
+int
+HitTest(int x, int y, RECT rect){
+    return((rect.left <= x && x < rect.right) && (rect.top <= y && y < rect.bottom));
+}
 
 ////////////////////////////////
 
@@ -364,11 +372,6 @@ WinMain(HINSTANCE hInstance,
 }
 
 ////////////////////////////////
-
-int
-HitTest(int x, int y, RECT rect){
-    return((rect.left <= x && x < rect.right) && (rect.top <= y && y < rect.bottom));
-}
 
 int
 HasEvent(Input *input, Input_Event_Kind kind){
