@@ -1,6 +1,6 @@
 /*
 ** Win32 Custom Window Example Program
-**  v1.2 - April 30th 2020
+**  v1.2.1 - April 30th 2020
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
@@ -46,6 +46,8 @@
 
 #include <Windows.h>
 #include <Windowsx.h>
+
+// only for vsync, not necessary in copies:
 #include <dwmapi.h>
 
 // only for logging, not necessary in copies:
@@ -72,10 +74,10 @@ int border_width = 10;
 // of this problem can be found at WM_NCHITTEST.
 
 // With 100% control of how the border looks it is nice to be able to determine
-// if the window is active so that it's border can be respond with some kind of
+// if the window is active so that it's border can respond with some kind of
 // visual que to being inactive.
 
-// Besides that point the details of this aren't specific to a custom window
+// Besides those points the details of this aren't specific to a custom window
 // they are just mimicking a simple system layer <-> application layer interface.
 
 int  WindowIsActive(void);
@@ -177,7 +179,7 @@ PushEvent(void){
     return(result);
 }
 
-// The WindowProc callback for a custom bordered does most of the work.
+// The WindowProc callback does most of the work for a custom boredred window.
 // The messages that start with "WM_NC" deal with processing the non-client
 // area of the window. The main goal is to leave window moving and resizing
 // up to the OS while taking control of the rendering and border widgets.
@@ -199,8 +201,8 @@ CustomBorderWindowProc(HWND   hwnd,
         // lParam points to the type NCCALCSIZE_PARAMS. It turns out that the
         // first member of NCCALCSIZE_PARAMS is a RECT, and that if the rest
         // of the NCCALCSIZE_PARAMS structure is ignored then this message
-        // behaves the same anyway. NCCALCSIZE_PARAMS offers additional features
-        // that we do not need here.
+        // behaves the same way in eitehr case. NCCALCSIZE_PARAMS offers
+        // additional features that are not not used here.
         
         // The main strategy is to leave the client area the same as the
         // non-client area by not modifying the RECT at all. This way the whole
@@ -556,7 +558,7 @@ WinMain(HINSTANCE hInstance,
         
         // Personal preference - I like to put anything that resizes the window
         // from my code after the main update so that I can assume that the
-        // size never changes durring the update. This also happens to be a
+        // size never changes during the update. This also happens to be a
         // convenient way to make sure I immediately redo my layout and render
         // after a size change.
         
@@ -612,8 +614,8 @@ WinMain(HINSTANCE hInstance,
 ////////////////////////////////
 
 // The implementation of the application tick function which renders the border,
-// inside of the window, embedded widgets, and processes input for both the
-// border and the interior in the same way.
+// inside of the window, and embedded widgets, and processes input for both the
+// border and the interior through a single input system.
 
 int
 HasEvent(Input *input, Input_Event_Kind kind){
