@@ -1,6 +1,6 @@
 /*
 ** Win32 Custom Window Example Program
-**  v1.1 - April 30th 2020
+**  v1.2 - April 30th 2020
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
@@ -141,6 +141,7 @@ CustomBorderWindowProc(HWND   hwnd,
         {
             result = 1;
             window_is_active = wParam;
+            // A convenient function for checking if a window is minimized.
             if (IsIconic(hwnd)){
                 result = DefWindowProcW(hwnd, uMsg, wParam, -1);
             }
@@ -151,31 +152,35 @@ CustomBorderWindowProc(HWND   hwnd,
             POINT pos;
             pos.x = GET_X_LPARAM(lParam);
             pos.y = GET_Y_LPARAM(lParam);
+            
             RECT frame_rect;
             GetWindowRect(hwnd, &frame_rect);
-            
             if (!HitTest(pos.x, pos.y, frame_rect)){
                 result = HTNOWHERE;
             }
             
             else{
                 
-                // Resize
+                RECT rect;
+                GetClientRect(hwnd, &rect);
+                ScreenToClient(hwnd, &pos);
+                
+                // Borders
                 int l = 0;
                 int r = 0;
                 int b = 0;
                 int t = 0;
                 if (!IsZoomed(hwnd)){
-                    if (frame_rect.left <= pos.x && pos.x < frame_rect.left + border_width){
+                    if (rect.left <= pos.x && pos.x < rect.left + border_width){
                         l = 1;
                     }
-                    if (frame_rect.right - border_width <= pos.x && pos.x < frame_rect.right){
+                    if (rect.right - border_width <= pos.x && pos.x < rect.right){
                         r = 1;
                     }
-                    if (frame_rect.bottom - border_width <= pos.y && pos.y < frame_rect.bottom){
+                    if (rect.bottom - border_width <= pos.y && pos.y < rect.bottom){
                         b = 1;
                     }
-                    if (frame_rect.top <= pos.y && pos.y < frame_rect.top + border_width){
+                    if (rect.top <= pos.y && pos.y < rect.top + border_width){
                         t = 1;
                     }
                 }
@@ -210,9 +215,8 @@ CustomBorderWindowProc(HWND   hwnd,
                 
                 // Inside
                 else{
-                    if (frame_rect.top <= pos.y && pos.y < frame_rect.top + caption_width){
+                    if (rect.top <= pos.y && pos.y < rect.top + caption_width){
                         result = HTCAPTION;
-                        ScreenToClient(hwnd, &pos);
                         for (int i = 0; i < embedded_widget_count; i += 1){
                             if (HitTest(pos.x, pos.y, embedded_widget_rect[i])){
                                 result = HTCLIENT;
@@ -310,6 +314,7 @@ WinMain(HINSTANCE hInstance,
     }
     
     SetWindowTheme(hwnd, L" ", L" ");
+    
     
     BOOL composition_enabled;
     if (DwmIsCompositionEnabled(&composition_enabled) != S_OK){

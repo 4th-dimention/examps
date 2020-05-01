@@ -1,6 +1,6 @@
 /*
 ** Win32 Custom Window Example Program
-**  v1.1 - April 30th 2020
+**  v1.2 - April 30th 2020
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
@@ -315,15 +315,19 @@ CustomBorderWindowProc(HWND   hwnd,
             POINT pos;
             pos.x = GET_X_LPARAM(lParam);
             pos.y = GET_Y_LPARAM(lParam);
-            RECT frame_rect;
-            GetWindowRect(hwnd, &frame_rect);
             
             // Make sure the point is inside of the window
+            RECT frame_rect;
+            GetWindowRect(hwnd, &frame_rect);
             if (!HitTest(pos.x, pos.y, frame_rect)){
                 result = HTNOWHERE;
             }
             
             else{
+                
+                RECT rect;
+                GetClientRect(hwnd, &rect);
+                ScreenToClient(hwnd, &pos);
                 
                 // Check each border
                 int l = 0;
@@ -331,16 +335,16 @@ CustomBorderWindowProc(HWND   hwnd,
                 int b = 0;
                 int t = 0;
                 if (!IsZoomed(hwnd)){
-                    if (frame_rect.left <= pos.x && pos.x < frame_rect.left + border_width){
+                    if (rect.left <= pos.x && pos.x < rect.left + border_width){
                         l = 1;
                     }
-                    if (frame_rect.right - border_width <= pos.x && pos.x < frame_rect.right){
+                    if (rect.right - border_width <= pos.x && pos.x < rect.right){
                         r = 1;
                     }
-                    if (frame_rect.bottom - border_width <= pos.y && pos.y < frame_rect.bottom){
+                    if (rect.bottom - border_width <= pos.y && pos.y < rect.bottom){
                         b = 1;
                     }
-                    if (frame_rect.top <= pos.y && pos.y < frame_rect.top + border_width){
+                    if (rect.top <= pos.y && pos.y < rect.top + border_width){
                         t = 1;
                     }
                 }
@@ -380,10 +384,9 @@ CustomBorderWindowProc(HWND   hwnd,
                 // borders, so the final options are the window moving area (caption)
                 // and the client area.
                 else{
-                    if (frame_rect.top <= pos.y && pos.y < frame_rect.top + caption_width){
+                    if (rect.top <= pos.y && pos.y < rect.top + caption_width){
                         result = HTCAPTION;
                         // Check the application defined widget areas
-                        ScreenToClient(hwnd, &pos);
                         for (int i = 0; i < embedded_widget_count; i += 1){
                             if (HitTest(pos.x, pos.y, embedded_widget_rect[i])){
                                 result = HTCLIENT;
