@@ -1,6 +1,6 @@
 /*
 ** Win32 Custom Window Example Program
-**  v1.2.1 - April 30th 2020
+**  v1.3.0 - May 8th 2020
 **  by Allen Webster allenwebster@4coder.net
 **
 ** public domain example program
@@ -35,13 +35,19 @@
 **
 **
 ** Required windows libraries:
-**  User32.lib UxTheme.lib
+**  User32.lib UxTheme.lib Dwmapi.lib
 ** Pragmas versions:
 **  #pragma comment(lib, "User32.lib")
 **  #pragma comment(lib, "UxTheme.lib")
+**  #pragma comment(lib, "Dwmapi.lib")
 **
 ** Libraries only for rendering, not required:
-** Gdi32.lib Dwmapi.lib
+** Gdi32.lib
+**
+**
+** Additional contributions from:
+**  Martins Mozeiko
+**
 */
 
 #include <Windows.h>
@@ -157,6 +163,8 @@ EmbeddedWidgetRect(RECT rect){
 
 ////////////////////////////////
 
+BOOL composition_enabled;
+
 #define MAX_INPUT_EVENT_COUNT 128
 int input_event_cursor = 0;
 Input_Event input_event_memory[MAX_INPUT_EVENT_COUNT];
@@ -216,49 +224,58 @@ CustomBorderWindowProc(HWND   hwnd,
         // doesn't show it's border. This behavior can't be disabled but
         // it is possible nullify the effect by querying how wide the overhang
         // area will be and pushing the non-client area in by that amount.
+        
+        // Pushing in the client area gives the render target for the application
+        // the correct area, but it still leaves an unrendered artifact hanging
+        // outside of the window, which is visible for users with multiple
+        // monitors. Calling DwmExtendFrameIntoClientArea addresses this. Normally
+        // this call widens the area thw window paints as part of border by
+        // pushing in the interior of the window frame. In this case where border
+        // rendering is in application code  it just pushes in the area where
+        // the overhang artifact is visible to the point where it is removed.
         case WM_NCCALCSIZE:
         {
             MARGINS m = { 0, 0, 0, 0 };
-
+            
             RECT* r = (RECT*)lParam;
+            
             // A convenient function for checking if a window is maximized.
             if (IsZoomed(hwnd)){
+                
                 int x_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
                 int y_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                r->top    += x_push_in;
-                r->left   += y_push_in;
-                r->right  -= x_push_in;
-                r->bottom -= y_push_in;
-
+                r->left   += x_push_in;
+                r->top    += y_push_in;
+                r->bottom -= x_push_in;
+                r->right  -= y_push_in;
+                
                 m.cxLeftWidth = m.cxRightWidth = x_push_in;
                 m.cyTopHeight = m.cyBottomHeight = y_push_in;
             }
-
-            BOOL enabled;
-            DwmIsCompositionEnabled(&enabled);
-            if (enabled)
-            {
+            
+            if (composition_enabled){
                 DwmExtendFrameIntoClientArea(hwnd, &m);
             }
-
+            
         }break;
-
-        // this fixes margins for maximized window when dwm compositor is enabled
+        
+        // TODO(allen): This message relates to Windows 7 and Vista where the DWM mode
+        // can change. I need to experiment with it before leaving commentary.
         case WM_DWMCOMPOSITIONCHANGED:
         {
-            MARGINS m = { 0, 0, 0, 0 };
-
-            if (IsZoomed(hwnd))
-            {
-                LONG bx = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                LONG by = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-
-                m.cxLeftWidth = m.cxRightWidth = bx - 1;
-                m.cyTopHeight = m.cyBottomHeight = by - 1;
+            DwmIsCompositionEnabled(&composition_enabled);
+            if (composition_enabled){
+                MARGINS m = { 0, 0, 0, 0 };
+                if (IsZoomed(hwnd)){
+                    int x_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                    int y_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                    m.cxLeftWidth = m.cxRightWidth = x_push_in;
+                    m.cyTopHeight = m.cyBottomHeight = y_push_in;
+                }
+                DwmExtendFrameIntoClientArea(hwnd, &m);
             }
-            DwmExtendFrameIntoClientArea(hwnd, &m);
-        } break;
-
+        }break;
+        
         
         // The WM_NCACTIVATE message is sent to a window before the WM_ACTIVATE
         // message. When a window uses the default border this message is used
@@ -571,7 +588,6 @@ WinMain(HINSTANCE hInstance,
     
     // A convenient way to get vsync since this example doesn't have a more
     // sophistcated graphics context.
-    BOOL composition_enabled;
     if (DwmIsCompositionEnabled(&composition_enabled) != S_OK){
         fprintf(stderr, "DwmIsCompositionEnabled failed\n");
         composition_enabled = 0;
@@ -660,6 +676,9 @@ HasEvent(Input *input, Input_Event_Kind kind){
             if (event->kind == kind){
                 result = 1;
                 *ptr_to = next;
+                if (event == input->last_event){
+                    input->last_event = last;
+                }
                 break;
             }
             else{
@@ -667,7 +686,6 @@ HasEvent(Input *input, Input_Event_Kind kind){
                 last = event;
             }
         }
-        input->last_event = last;
     }
     return(result);
 }
