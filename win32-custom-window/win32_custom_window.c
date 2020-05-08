@@ -223,8 +223,8 @@ CustomBorderWindowProc(HWND   hwnd,
             RECT* r = (RECT*)lParam;
             // A convenient function for checking if a window is maximized.
             if (IsZoomed(hwnd)){
-                int x_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                int y_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                int x_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                int y_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
                 r->top    += x_push_in;
                 r->left   += y_push_in;
                 r->right  -= x_push_in;
