@@ -218,17 +218,47 @@ CustomBorderWindowProc(HWND   hwnd,
         // area will be and pushing the non-client area in by that amount.
         case WM_NCCALCSIZE:
         {
+            MARGINS m = { 0, 0, 0, 0 };
+
             RECT* r = (RECT*)lParam;
             // A convenient function for checking if a window is maximized.
             if (IsZoomed(hwnd)){
-                int x_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
-                int y_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                int x_push_in = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                int y_push_in = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
                 r->top    += x_push_in;
                 r->left   += y_push_in;
                 r->right  -= x_push_in;
                 r->bottom -= y_push_in;
+
+                m.cxLeftWidth = m.cxRightWidth = x_push_in;
+                m.cyTopHeight = m.cyBottomHeight = y_push_in;
             }
+
+            BOOL enabled;
+            DwmIsCompositionEnabled(&enabled);
+            if (enabled)
+            {
+                DwmExtendFrameIntoClientArea(hwnd, &m);
+            }
+
         }break;
+
+        // this fixes margins for maximized window when dwm compositor is enabled
+        case WM_DWMCOMPOSITIONCHANGED:
+        {
+            MARGINS m = { 0, 0, 0, 0 };
+
+            if (IsZoomed(hwnd))
+            {
+                LONG bx = GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+                LONG by = GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
+
+                m.cxLeftWidth = m.cxRightWidth = bx - 1;
+                m.cyTopHeight = m.cyBottomHeight = by - 1;
+            }
+            DwmExtendFrameIntoClientArea(hwnd, &m);
+        } break;
+
         
         // The WM_NCACTIVATE message is sent to a window before the WM_ACTIVATE
         // message. When a window uses the default border this message is used
