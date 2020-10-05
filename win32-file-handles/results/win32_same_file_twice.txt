@@ -1,0 +1,2882 @@
+----------------------------------------------------------------
+Same File Twice:
+h1: access=read; share=none;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=none;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=read;
+h1 = 116
+h2 = 120
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=write;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=read-write;
+h1 = 120
+h2 = 116
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=read-delete;
+h1 = 116
+h2 = 120
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=write-delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read;
+h2: access=read-write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=read;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=write-delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=write; share=read-write-delete;
+h1 = 120
+h2 = 116
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=read;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=write;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=read-write;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=read-delete;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=write-delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read; share=read-write-delete;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=read;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=write;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=read-write;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=write-delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=write; share=read-write-delete;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=write;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=read-write;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=write-delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write;
+h2: access=read-write; share=read-write-delete;
+h1 = 132
+h2 = 116
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=read;
+h1 = 116
+h2 = 132
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=write;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=read-write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=read;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=read-write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=write;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=read-write;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read; share=read-write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=none;
+h2: access=read-write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=write;
+h1 = 124
+h2 = 132
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=read-write;
+h1 = 132
+h2 = 124
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = 132
+--------------------------------
+h1: access=write; share=read;
+h2: access=read; share=read-write-delete;
+h1 = 132
+h2 = 124
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read;
+h2: access=read-write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=write;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=read-write;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = 128
+--------------------------------
+h1: access=write; share=write;
+h2: access=write; share=read-write-delete;
+h1 = 128
+h2 = 124
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write;
+h2: access=read-write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=read-write;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=write;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=read-write;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=write-delete;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read; share=read-write-delete;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=write;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=read-write;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=write-delete;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=write; share=read-write-delete;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=read;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=write;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=delete;
+h1 = 120
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=read-write;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=read-delete;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=write-delete;
+h1 = 124
+h2 = 120
+--------------------------------
+h1: access=write; share=read-write;
+h2: access=read-write; share=read-write-delete;
+h1 = 120
+h2 = 124
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=none;
+h1 = 124
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=write;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=read-write;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read; share=read-write-delete;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=write;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=read-write;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=write;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=read-write;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=write;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=read-write;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=write;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=delete;
+h1 = 132
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=read-write;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 128
+h2 = 132
+--------------------------------
+h1: access=write; share=read-write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 132
+h2 = 128
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=read-write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read; share=read-write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=none;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=read;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=write;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=none;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=read-write;
+h1 = 116
+h2 = 136
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read; share=read-write-delete;
+h1 = 136
+h2 = 116
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read; share=read-write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = 136
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=write; share=read-write-delete;
+h1 = 136
+h2 = 116
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write;
+h2: access=read-write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=read-write;
+h1 = 116
+h2 = 136
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read; share=read-write-delete;
+h1 = 136
+h2 = 116
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=read-write;
+h1 = 116
+h2 = 136
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=write; share=read-write-delete;
+h1 = 136
+h2 = 116
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=none;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=read;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=write;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=read-write;
+h1 = 116
+h2 = 136
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write;
+h2: access=read-write; share=read-write-delete;
+h1 = 136
+h2 = 140
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=read-write;
+h1 = 140
+h2 = 136
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=read-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=write-delete;
+h1 = 136
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read; share=read-write-delete;
+h1 = 136
+h2 = 140
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=read-write;
+h1 = 140
+h2 = 116
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 116
+h2 = 140
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=read-write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=read-write;
+h1 = 140
+h2 = 128
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read; share=read-write-delete;
+h1 = 128
+h2 = 140
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=read-write;
+h1 = 140
+h2 = 128
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=read-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=write-delete;
+h1 = 128
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=write; share=read-write-delete;
+h1 = 128
+h2 = 140
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=none;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=read;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=write;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=delete;
+h1 = 140
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=read-write;
+h1 = 140
+h2 = 116
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=read-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=write-delete;
+h1 = 116
+h2 = INVALID_HANDLE_VALUE
+--------------------------------
+h1: access=read-write; share=read-write-delete;
+h2: access=read-write; share=read-write-delete;
+h1 = 116
+h2 = 140
+--------------------------------
