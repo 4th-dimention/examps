@@ -1,0 +1,70 @@
+make: Nothing to be done for 'all'.
+RENAME TESTS
+mnt/ext2: Detected filesystem EXT[234]
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext2/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext2/name_A.txt (deleted))
+mnt/ext3: Detected filesystem EXT[234]
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext3/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext3/name_A.txt (deleted))
+mnt/ext4: Detected filesystem EXT[234]
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext4/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext4/name_A.txt (deleted))
+mnt/xfs: Detected filesystem XFS
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/xfs/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/xfs/name_A.txt (deleted))
+mnt/btrfs: Detected filesystem BTRFS
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/btrfs/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/btrfs/name_A.txt (deleted))
+rename_file_handles: src/rename_file_handles.c:46: void rename_using_link_unlink(int, char *, char *): Assertion `ret == 0' failed.
+mnt/vfat: Detected filesystem MSDOS
+- rename:
+- link+unlink:
+02-run_tests.sh: line 7: 16020 Aborted                 ./build/rename_file_handles mnt/$FS
+rename_file_handles: src/rename_file_handles.c:46: void rename_using_link_unlink(int, char *, char *): Assertion `ret == 0' failed.
+mnt/exfat: Detected filesystem FUSE
+- rename:
+- link+unlink:
+02-run_tests.sh: line 7: 16021 Aborted                 ./build/rename_file_handles mnt/$FS
+mnt/ntfs: Detected filesystem FUSE
+- rename:
+- link+unlink:
+File descriptor path does not match expected path (/home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ntfs/name_B.txt != /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ntfs/name_A.txt (deleted))
+
+DELETE TESTS
+mnt/ext2: Detected filesystem EXT[234]
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext2/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext2/name_A.txt (deleted)
+mnt/ext3: Detected filesystem EXT[234]
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext3/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext3/name_A.txt (deleted)
+mnt/ext4: Detected filesystem EXT[234]
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext4/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ext4/name_A.txt (deleted)
+mnt/xfs: Detected filesystem XFS
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/xfs/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/xfs/name_A.txt (deleted)
+mnt/btrfs: Detected filesystem BTRFS
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/btrfs/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/btrfs/name_A.txt (deleted)
+mnt/vfat: Detected filesystem MSDOS
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/vfat/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/vfat/name_A.txt (deleted)
+mnt/exfat: Detected filesystem FUSE
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/exfat/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/exfat/name_A.txt (deleted)
+mnt/ntfs: Detected filesystem FUSE
+- unlink:
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ntfs/name_A.txt
+Path is: /home/lain/dev/dion/08-filesystem/examps/linux-file-handles/mnt/ntfs/name_A.txt (deleted)

@@ -10,7 +10,7 @@ CC = clang
 ACCEPTED_WARNINGS += -Wno-missing-braces -Wno-missing-field-initializers -Wno-unused-function -Wno-unused-variable -Wno-unused-parameter
 
 BUILD_DIR = build
-TARGETS = $(BUILD_DIR) $(BUILD_DIR)/test_file_handles
+TARGETS = $(BUILD_DIR) $(BUILD_DIR)/rename_file_handles $(BUILD_DIR)/delete_file_handles
 
 all: $(TARGETS)
 
@@ -20,7 +20,10 @@ all: $(TARGETS)
 $(BUILD_DIR):
 	mkdir $@
 
-$(BUILD_DIR)/test_file_handles: src/test_file_handles.c
+$(BUILD_DIR)/rename_file_handles: src/rename_file_handles.c
+	$(CC) $(CFLAGS) $(ACCEPTED_WARNINGS) $< -o $@
+
+$(BUILD_DIR)/delete_file_handles: src/delete_file_handles.c
 	$(CC) $(CFLAGS) $(ACCEPTED_WARNINGS) $< -o $@
 
 .PHONY: clean

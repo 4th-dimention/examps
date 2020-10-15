@@ -39,15 +39,18 @@
  */
 
 typedef void (*RenameProc) (int fd, char *old, char *new);
-void rename_using_rename(int fd, char *old, char *new){
+static void rename_using_rename(int fd, char *old, char *new){
     int ret = rename(old, new);                                                 assert(ret == 0);
 }
-void rename_using_link_unlink(int fd, char *old, char *new){
+static void rename_using_link_unlink(int fd, char *old, char *new){
     int ret = link(old, new);                                                   assert(ret == 0);
     ret = unlink(old);                                                          assert(ret == 0);
 }
-// NOTE(mal): This one requires the executable to have CAP_DAC_READ_SEARCH set
-void rename_using_linkat_unlink(int fd, char *old, char *new){
+// NOTE(mal): This one requires the executable to have the CAP_DAC_READ_SEARCH capability set
+//            so I'm not testing it, but it looks promising because it takes fd
+//            as an argument so it's at least possible that the kernel would attempt to adopt
+//            the new name for it
+static void rename_using_linkat_unlink(int fd, char *old, char *new){
     int ret = linkat(fd, "", AT_FDCWD, new, AT_EMPTY_PATH);                     assert(ret == 0);
     ret = unlink(old);                                                          assert(ret == 0);
 }
@@ -58,7 +61,7 @@ static void get_path_to_fd(int fd, char *result, int max_len){
     ssize_t path_to_file_len = readlink(path_to_proc_fd, result, max_len);      assert(path_to_file_len != -1);
 }
 
-static void check_path(int fd, char *path, char *error_prefix){
+static void check_path(int fd, char *path){
     char old_canonical_path[MAX_PATH];
     char *ret_s = realpath(path, old_canonical_path);                           assert(ret_s != 0);
 
@@ -66,8 +69,8 @@ static void check_path(int fd, char *path, char *error_prefix){
     get_path_to_fd(fd, old_resolved_path, ArrayCount(old_resolved_path));
 
     if(strcmp(old_canonical_path, old_resolved_path)){
-        printf("(%s) File descriptor path does not match expected path (%s != %s)\n", 
-               error_prefix, old_canonical_path, old_resolved_path);
+        printf("File descriptor path does not match expected path (%s != %s)\n", 
+               old_canonical_path, old_resolved_path);
     }
 }
 
@@ -131,15 +134,17 @@ int main(int argc, char *argv[]){
         RenameProc rename_proc = rename_procs_and_names[i_proc].proc;
         char *rename_proc_name = rename_procs_and_names[i_proc].name;
 
+        printf("- %s:\n", rename_proc_name);
+
         /* NOTE(mal): Open, write, check path, rename, write, check path, close */ {
             int fd = open(old_path, O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);     assert(fd != -1);
             ssize_t bytes_written = write(fd, contents_a, contents_len_a);          assert(bytes_written == contents_len_a);
-            check_path(fd, old_path, rename_proc_name);
+            check_path(fd, old_path);
 
             rename_proc(fd, old_path, new_path);
 
             bytes_written = write(fd, contents_b, contents_len_b);                  assert(bytes_written == contents_len_b);
-            check_path(fd, new_path, rename_proc_name);
+            check_path(fd, new_path);
             ret = close(fd);                                                        assert(ret != -1);
         }
 
