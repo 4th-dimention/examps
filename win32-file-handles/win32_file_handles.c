@@ -84,18 +84,27 @@ typedef void (*RenameProc) (HANDLE h, wchar_t *old, wchar_t *new);
 
 static void rename_using_MoveFileEx(HANDLE h, wchar_t *old, wchar_t *new){
     UnusedVariable(h);
-    int ret = MoveFileExW(old, new, MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
+    int ret = MoveFileExW(old, new, MOVEFILE_REPLACE_EXISTING);
     AssertMessage(ret != 0, "Rename failed");
 }
 
 static void rename_using_SetFileInformationByHandle(HANDLE h, wchar_t *old, wchar_t *new){
     /* NOTE(mal): This one is more convenient because it only needs a handle and a new name
-       https://youtu.be/uhRWMGBjlO8?t=2000
-       - SetFileInformationByHandle with FileRenameInfo and FILE_RENAME_INFO.ReplaceIfExists == true
-       takes a handle
+       This video https://youtu.be/uhRWMGBjlO8?t=2000 recommends
+       SetFileInformationByHandle with FileRenameInfo and FILE_RENAME_INFO.ReplaceIfExists == true
+       and warns against MoveFileEx. I haven't been able to find documentation on the supposed drawbacks
+       of MoveFileEx (copy-delete semantics if regular move fails).
+
+       The CreateFile that returns this handle has to specify the DELETE access flag, because the deletion 
+       happens through the handle itself.
+
+       Starting on some revision of Windows 10 (1607) there's explicit support for NTFS "atomic superseeding rename":
+       - https://stackoverflow.com/a/51737582
+
+       The documentation I've found does not provide much detail:
        https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle
        https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information
-       - SetFileInformationByHandle with FileRenameInfoEx and FILE_RENAME_FLAG_POSIX_SEMANTICS (windows 10)
+       - SetFileInformationByHandle with FileRenameInfoEx and FILE_RENAME_FLAG_POSIX_SEMANTICS
      */
     UnusedVariable(old);
 
@@ -187,6 +196,8 @@ WinMain(HINSTANCE hInstance,
 #endif
 
 #if RENAME_FILE
+    /* NOTE(mal):
+     */
     // TODO(mal): Check behavior on shared remote folders
 
 #define OLD_NAME L"test_data\\file_A.txt"
