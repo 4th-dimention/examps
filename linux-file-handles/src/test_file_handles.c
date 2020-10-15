@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <assert.h>
 
@@ -37,12 +38,17 @@
               That method is also not atomic and fails on (non-POSIX) filesystems that lack the concept of a hardlink.
  */
 
-typedef void (*RenameProc) (char *old, char *new);
-void rename_using_rename(char *old, char *new){
+typedef void (*RenameProc) (int fd, char *old, char *new);
+void rename_using_rename(int fd, char *old, char *new){
     int ret = rename(old, new);                                                 assert(ret == 0);
 }
-void rename_using_link_unlink(char *old, char *new){
+void rename_using_link_unlink(int fd, char *old, char *new){
     int ret = link(old, new);                                                   assert(ret == 0);
+    ret = unlink(old);                                                          assert(ret == 0);
+}
+// NOTE(mal): This one requires the executable to have CAP_DAC_READ_SEARCH set
+void rename_using_linkat_unlink(int fd, char *old, char *new){
+    int ret = linkat(fd, "", AT_FDCWD, new, AT_EMPTY_PATH);                     assert(ret == 0);
     ret = unlink(old);                                                          assert(ret == 0);
 }
 
@@ -100,14 +106,17 @@ int main(int argc, char *argv[]){
         RenameProc proc;
         char *name;
     } rename_procs_and_names[] = {
-          {rename_using_rename,      "rename"},
-          {rename_using_link_unlink, "link+unlink"},
+          {rename_using_rename,        "rename"},
+          {rename_using_link_unlink,   "link+unlink"},
     };
 
     char old_path[MAX_PATH];
     char new_path[MAX_PATH];
     sprintf(old_path, "%s/%s", base_dir, OLD_NAME);
     sprintf(new_path, "%s/%s", base_dir, NEW_NAME);
+
+    unlink(old_path);
+    unlink(new_path);
 
     char contents_a[] = CONTENTS_A;
     int contents_len_a = ArrayCount(contents_a)-1;
@@ -127,7 +136,7 @@ int main(int argc, char *argv[]){
             ssize_t bytes_written = write(fd, contents_a, contents_len_a);          assert(bytes_written == contents_len_a);
             check_path(fd, old_path, rename_proc_name);
 
-            rename_proc(old_path, new_path);
+            rename_proc(fd, old_path, new_path);
 
             bytes_written = write(fd, contents_b, contents_len_b);                  assert(bytes_written == contents_len_b);
             check_path(fd, new_path, rename_proc_name);
@@ -150,6 +159,7 @@ int main(int argc, char *argv[]){
                 printf("Wrong file length (%d != %ld)\n", contents_len_ab, stat_buf.st_size);
             }
             close(fd);
+
             unlink(new_path);
         }
 
