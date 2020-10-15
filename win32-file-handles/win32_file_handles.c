@@ -14,7 +14,7 @@
 #define ArrayCount(a) (sizeof(a)/sizeof(*(a)))
 #define UnusedVariable(name) (void)name;
 
-static void AssertMessage(int condition, char *message){
+static void AssertMessage_do_exit_(int condition, char *message, int do_exit){
     if(!condition){
         printf("%s\n", message);
 
@@ -22,11 +22,21 @@ static void AssertMessage(int condition, char *message){
         LPSTR messageBuffer = 0;
         size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                                      NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-        printf("%s\n", messageBuffer);
+        //printf("%s\n", messageBuffer);
         fflush(stdout);
 
-        ExitProcess(0);
+        if(do_exit){
+            ExitProcess(0);
+        }
     }
+}
+
+static void AssertMessageDontExit(int condition, char *message){
+    AssertMessage_do_exit_(condition, message, 0);
+}
+
+static void AssertMessage(int condition, char *message){
+    AssertMessage_do_exit_(condition, message, 1);
 }
 
 
@@ -48,7 +58,15 @@ typedef struct{
 CreateFileParam access_params[] = {
     {GENERIC_READ, "read"},
     {GENERIC_WRITE, "write"},
+#if 0
+    {DELETE, "delete"},
+#endif
     {GENERIC_READ|GENERIC_WRITE, "read-write"},
+#if 0
+    {GENERIC_READ|DELETE, "read-delete"},
+    {GENERIC_WRITE|DELETE, "write-delete"},
+    {GENERIC_READ|GENERIC_WRITE|DELETE, "read-write-delete"},
+#endif
 };
 
 CreateFileParam share_params[] = {
@@ -108,6 +126,15 @@ static void rename_using_ReplaceFile(HANDLE h, wchar_t *old, wchar_t *new){
     AssertMessage(ret != 0, "Rename failed");
 }
 
+static void print_handle_disk_info(HANDLE h){
+    BY_HANDLE_FILE_INFORMATION file_info = {0};
+    BOOL ret = GetFileInformationByHandle(h, &file_info);
+    AssertMessage(ret != 0, "GetFileInformationByHandleEx failed");
+    printf("volume = %lx id_high = %lx id_low = %lx\n",
+           file_info.dwVolumeSerialNumber, file_info.nFileIndexHigh, file_info.nFileIndexLow);
+}
+
+
 
 
 int
@@ -160,11 +187,15 @@ WinMain(HINSTANCE hInstance,
 #endif
 
 #if RENAME_FILE
+    // TODO(mal): Check behavior on shared remote folders
 
 #define OLD_NAME L"test_data\\file_A.txt"
 #define NEW_NAME L"test_data\\file_B.txt"
 #define CONTENTS_A "asdf"
 #define CONTENTS_B "jkl"
+
+    print_hz();
+    printf("Rename test:\n");
 
     char contents_a[] = CONTENTS_A;
     int contents_len_a = ArrayCount(contents_a)-1;
@@ -189,8 +220,7 @@ WinMain(HINSTANCE hInstance,
         RenameProc rename_proc = rename_procs_and_names[i_proc].proc;
         char *rename_proc_name = rename_procs_and_names[i_proc].name;
 
-        printf("%s : ", rename_proc_name);
-
+        printf("- %s:\n", rename_proc_name);
 
         HANDLE h = CreateFileW(OLD_NAME,
                                GENERIC_READ|GENERIC_WRITE|DELETE,
@@ -201,20 +231,22 @@ WinMain(HINSTANCE hInstance,
             return(0);
         }
 
+        print_handle_disk_info(h);
+
         DWORD written = 0;
 
         BOOL ret = WriteFile(h, contents_a, contents_len_a, &written, 0);
-        AssertMessage(ret != 0 && written == contents_len_a, "Initial WriteFile failed");
+        AssertMessageDontExit(ret != 0 && written == contents_len_a, "Initial WriteFile failed");
 
         rename_proc(h, OLD_NAME, NEW_NAME);
 
         wchar_t path[MAX_PATH];
         DWORD path_len = GetFinalPathNameByHandleW(h, path, MAX_PATH, FILE_NAME_OPENED);
         ret = wcscmp (path + wcslen(path) - wcslen(NEW_NAME), NEW_NAME);
-        AssertMessage(ret == 0, "File does not match NEW_NAME");
+        AssertMessageDontExit(ret == 0, "File does not match NEW_NAME");
 
         ret = WriteFile(h, contents_b, contents_len_b, &written, 0);
-        AssertMessage(ret != 0 && written == contents_len_b, "Second WriteFile failed");
+        AssertMessageDontExit(ret != 0 && written == contents_len_b, "Second WriteFile failed");
 
         CloseHandle(h);
 
@@ -227,6 +259,8 @@ WinMain(HINSTANCE hInstance,
             return(0);
         }
 
+        print_handle_disk_info(h);
+
         long int size = 0; {
             DWORD high_bytes;
             DWORD read_bytes = GetFileSize(h, &high_bytes);
@@ -238,10 +272,11 @@ WinMain(HINSTANCE hInstance,
         DWORD bytes_read = 0;
 
         ret = ReadFile(h, buffer, size, &bytes_read, 0);
-        AssertMessage(bytes_read == contents_len_ab && memcmp(contents_ab, buffer, bytes_read) == 0, 
+        AssertMessageDontExit(bytes_read == contents_len_ab && memcmp(contents_ab, buffer, bytes_read) == 0, 
                       "File content mistmatch");
         CloseHandle(h);
-        printf("OK\n");
+        printf("\n");
+
     }
 
 
