@@ -143,6 +143,23 @@ static void print_handle_disk_info(HANDLE h){
            file_info.dwVolumeSerialNumber, file_info.nFileIndexHigh, file_info.nFileIndexLow);
 }
 
+typedef void (*DeleteProc) (HANDLE h, wchar_t *fname);
+
+static void delete_using_DeleteFile(HANDLE h, wchar_t *fname){
+    UnusedVariable(h);
+    int ret = DeleteFileW(fname);
+    AssertMessage(ret != 0, "Delete failed");
+}
+
+static void delete_using_SetFileInformationByHandle(HANDLE h, wchar_t *fname){
+    UnusedVariable(fname);
+
+    FILE_DISPOSITION_INFO file_disposition_info = {0};
+    file_disposition_info.DeleteFile = 1;
+    int ret = SetFileInformationByHandle(h, FileDispositionInfo, &file_disposition_info, sizeof(file_disposition_info));
+    AssertMessage(ret != 0, "Delete failed");
+}
+
 
 
 
@@ -196,9 +213,18 @@ WinMain(HINSTANCE hInstance,
 #endif
 
 #if RENAME_FILE
-    /* NOTE(mal):
+    /* NOTE(mal): There are two ways of renaming a file:
+      - Using its path (MoveFileEx)
+      - Using an open handle (SetFileInformationByHandle)
+      The second one should probably be the prefered choice if the source for my comments under
+      rename_using_SetFileInformationByHandle is to be trusted.
+
+      On my tests (conducted on NTFS and a remote CIFS volume) both behave the same, preserving the underlying
+      disk id for the files, allowing to write to renamed handles and preserving all data written before and 
+      after the rename.
+      Both renaming methods report the new file name after a call to GetFinalPathNameByHandle(handle) on NTFS, BUT
+      both report the _OLD_ file name with the particular configuration of the CIFS volume I've used.
      */
-    // TODO(mal): Check behavior on shared remote folders
 
 #define OLD_NAME L"test_data\\file_A.txt"
 #define NEW_NAME L"test_data\\file_B.txt"
@@ -292,6 +318,108 @@ WinMain(HINSTANCE hInstance,
 
 
 #endif
+
+#if DELETE_FILE
+    /* NOTE(mal):
+       https://docs.microsoft.com/en-us/windows/win32/fileio/closing-and-deleting-files
+       Deleting a file means marking it for deletion, which will only happen after all open handles to it have been
+       closed. Even after that happens there's a short period of time when the file will still be visible and will 
+       block the creation of a file with the name of the deleted file.
+       It is then necessary to rename the target file prior to deletion to avoid this problem.
+
+       I know of two ways of marking a file for deletion:
+       - Using its path (DeleteFile):
+         https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew
+       - Using an open handle (SetFileInformationByHandle with FileInformationClass==FileDispositionInfo and
+                               DeleteFile set to True inside the FILE_DISPOSITION_INFO parameter):
+         https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle and
+         https://docs.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_disposition_info
+     */
+
+#define PATH_NAME L"test_data\\file_A.txt"
+#define CONTENTS_A "asdf"
+#define CONTENTS_B "jkl"
+
+    print_hz();
+    printf("Delete test:\n");
+
+    char contents_a[] = CONTENTS_A;
+    int contents_len_a = ArrayCount(contents_a)-1;
+
+    char contents_b[] = CONTENTS_B;
+    int contents_len_b = ArrayCount(contents_b)-1;
+
+    char contents_ab[] = CONTENTS_A CONTENTS_B;
+    int contents_len_ab = ArrayCount(contents_ab)-1;
+
+    struct{
+        DeleteProc proc;
+        char *name;
+    } delete_procs_and_names[] = {
+          {delete_using_DeleteFile,                   "DeleteFile"},
+          {delete_using_SetFileInformationByHandle,   "SetFileInformationByHandle"},
+    };
+
+
+    for(unsigned int i_proc = 0; i_proc < ArrayCount(delete_procs_and_names); ++i_proc){
+        DeleteProc delete_proc = delete_procs_and_names[i_proc].proc;
+        char *delete_proc_name = delete_procs_and_names[i_proc].name;
+
+        printf("- %s:\n", delete_proc_name);
+
+        HANDLE h = CreateFileW(PATH_NAME,
+                               GENERIC_READ|GENERIC_WRITE|DELETE,
+                               FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, 
+                               0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+        if (h == INVALID_HANDLE_VALUE){
+            printf("h = INVALID_HANDLE_VALUE\n");
+            return(0);
+        }
+
+        DWORD written = 0;
+
+        BOOL ret = WriteFile(h, contents_a, contents_len_a, &written, 0);
+        AssertMessageDontExit(ret != 0 && written == contents_len_a, "Initial WriteFile failed");
+
+        delete_proc(h, PATH_NAME);
+
+        ret = WriteFile(h, contents_b, contents_len_b, &written, 0);
+        AssertMessageDontExit(ret != 0 && written == contents_len_b, "Second WriteFile failed");
+
+        // TODO: Check content
+        DWORD ret_dw = SetFilePointer(h, 0, 0, FILE_BEGIN);
+        AssertMessage(ret_dw != INVALID_SET_FILE_POINTER, "Seek failed");
+
+        long int size = 0; {
+            DWORD high_bytes;
+            DWORD read_bytes = GetFileSize(h, &high_bytes);
+            size = (((long long int)high_bytes) << 32) + read_bytes;
+        }
+
+        char * buffer = (char *) malloc(size);
+        
+        DWORD bytes_read = 0;
+        ret = ReadFile(h, buffer, size, &bytes_read, 0);
+        AssertMessageDontExit(bytes_read == contents_len_ab && memcmp(contents_ab, buffer, bytes_read) == 0, 
+                      "File content mistmatch");
+
+        CloseHandle(h);
+
+        DWORD dwAttrib = GetFileAttributesW(PATH_NAME);
+
+        int exists = (dwAttrib != INVALID_FILE_ATTRIBUTES && 
+                      !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+
+        AssertMessageDontExit(!exists, "File still exists after marked for deletion");
+
+        CloseHandle(h);
+        printf("\n");
+
+    }
+
+
+#endif
+
     
     return(0);
 }
