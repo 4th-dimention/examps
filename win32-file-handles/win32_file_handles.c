@@ -17,12 +17,13 @@
 static void AssertMessage(int condition, char *message){
     if(!condition){
         printf("%s\n", message);
-        fflush(stdout);
 
         DWORD errorMessageID = GetLastError();
         LPSTR messageBuffer = 0;
         size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                                      NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+        printf("%s\n", messageBuffer);
+        fflush(stdout);
 
         ExitProcess(0);
     }
@@ -69,8 +70,15 @@ static void rename_using_MoveFileEx(HANDLE h, wchar_t *old, wchar_t *new){
     AssertMessage(ret != 0, "Rename failed");
 }
 
-// NOTE(mal): This one is more convenient because it only needs a handle and a new name
 static void rename_using_SetFileInformationByHandle(HANDLE h, wchar_t *old, wchar_t *new){
+    /* NOTE(mal): This one is more convenient because it only needs a handle and a new name
+       https://youtu.be/uhRWMGBjlO8?t=2000
+       - SetFileInformationByHandle with FileRenameInfo and FILE_RENAME_INFO.ReplaceIfExists == true
+       takes a handle
+       https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle
+       https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information
+       - SetFileInformationByHandle with FileRenameInfoEx and FILE_RENAME_FLAG_POSIX_SEMANTICS (windows 10)
+     */
     UnusedVariable(old);
 
     FILE_RENAME_INFO *file_rename_info = 0;
@@ -87,6 +95,20 @@ static void rename_using_SetFileInformationByHandle(HANDLE h, wchar_t *old, wcha
     int ret = SetFileInformationByHandle(h, FileRenameInfo, file_rename_info, file_rename_info_size);
     AssertMessage(ret != 0, "Rename failed");
 }
+
+static void rename_using_ReplaceFile(HANDLE h, wchar_t *old, wchar_t *new){
+    /* NOTE(mal): Microsoft recommends it over MovefileTransacted
+       (https://docs.microsoft.com/en-us/windows/win32/fileio/deprecation-of-txf)
+       It looks like its purpose is to update the content of the destination file while preserving metadata
+       I'm not including it because according to the documentation the old file is opened specifying no sharing
+       flags, which makes it impossible for us to hold an open handle to it.
+       Also, I believe that the destination file has to exist.
+     */
+    BOOL ret = ReplaceFileW(new, old, NULL, REPLACEFILE_IGNORE_MERGE_ERRORS|REPLACEFILE_IGNORE_ACL_ERRORS, 0, 0);
+    AssertMessage(ret != 0, "Rename failed");
+}
+
+
 
 int
 WinMain(HINSTANCE hInstance,
@@ -159,6 +181,7 @@ WinMain(HINSTANCE hInstance,
     } rename_procs_and_names[] = {
           {rename_using_MoveFileEx,                   "MoveFileEx"},
           {rename_using_SetFileInformationByHandle,   "SetFileInformationByHandle"},
+          /* {rename_using_ReplaceFile,               "ReplaceFile"}, */
     };
 
 
@@ -204,7 +227,6 @@ WinMain(HINSTANCE hInstance,
             return(0);
         }
 
-
         long int size = 0; {
             DWORD high_bytes;
             DWORD read_bytes = GetFileSize(h, &high_bytes);
@@ -223,22 +245,6 @@ WinMain(HINSTANCE hInstance,
     }
 
 
-    /* NOTE(mal):
-       - MoveFile and MoveFileEx
-       - MovefileTransacted seems like it could do the trick but Microsoft suggests using ReplaceFile
-         (https://docs.microsoft.com/en-us/windows/win32/fileio/deprecation-of-txf) instead
-       - ReplaceFile
-         Not really atomic
-         According to a comment from an intern working at MS (https://stackoverflow.com/a/23I68286),
-         only the data move is atomic, so not really an atomic operation
-
-         https://youtu.be/uhRWMGBjlO8?t=2000
-       - SetFileInformationByHandle with FileRenameInfo and FILE_RENAME_INFO.ReplaceIfExists == true
-         takes a handle
-         https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileinformationbyhandle
-         https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_file_rename_information
-       - SetFileInformationByHandle with FileRenameInfoEx and FILE_RENAME_FLAG_POSIX_SEMANTICS (windows 10)
-    */
 #endif
     
     return(0);
