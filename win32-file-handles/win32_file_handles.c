@@ -12,11 +12,18 @@
 #endif
 
 #define ArrayCount(a) (sizeof(a)/sizeof(*(a)))
+#define UnusedVariable(name) (void)name;
 
 static void AssertMessage(int condition, char *message){
     if(!condition){
         printf("%s\n", message);
         fflush(stdout);
+
+        DWORD errorMessageID = GetLastError();
+        LPSTR messageBuffer = 0;
+        size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                     NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
         ExitProcess(0);
     }
 }
@@ -53,6 +60,33 @@ CreateFileParam share_params[] = {
     {FILE_SHARE_WRITE|FILE_SHARE_DELETE, "write-delete"},
     {FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, "read-write-delete"},
 };
+
+typedef void (*RenameProc) (HANDLE h, wchar_t *old, wchar_t *new);
+
+static void rename_using_MoveFileEx(HANDLE h, wchar_t *old, wchar_t *new){
+    UnusedVariable(h);
+    int ret = MoveFileExW(old, new, MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
+    AssertMessage(ret != 0, "Rename failed");
+}
+
+// NOTE(mal): This one is more convenient because it only needs a handle and a new name
+static void rename_using_SetFileInformationByHandle(HANDLE h, wchar_t *old, wchar_t *new){
+    UnusedVariable(old);
+
+    FILE_RENAME_INFO *file_rename_info = 0;
+    DWORD file_rename_info_size = 0; {
+        int new_name_size = (wcslen(new)+1) * sizeof(wchar_t);
+        file_rename_info_size = sizeof(FILE_RENAME_INFO) + new_name_size;
+        file_rename_info = (FILE_RENAME_INFO *) malloc(file_rename_info_size);
+        memcpy(file_rename_info->FileName, new, new_name_size);
+        file_rename_info->FileNameLength = new_name_size;   // NOTE(mal): Don't know if it should final null byte
+        file_rename_info->ReplaceIfExists = TRUE;
+        file_rename_info->RootDirectory = NULL;
+    }
+
+    int ret = SetFileInformationByHandle(h, FileRenameInfo, file_rename_info, file_rename_info_size);
+    AssertMessage(ret != 0, "Rename failed");
+}
 
 int
 WinMain(HINSTANCE hInstance,
@@ -110,15 +144,6 @@ WinMain(HINSTANCE hInstance,
 #define CONTENTS_A "asdf"
 #define CONTENTS_B "jkl"
 
-    HANDLE h = CreateFileW(OLD_NAME,
-                           GENERIC_READ|GENERIC_WRITE,
-                           FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, 
-                           0, CREATE_ALWAYS, 0, 0);
-    if (h == INVALID_HANDLE_VALUE){
-        printf("h = INVALID_HANDLE_VALUE\n");
-        return(0);
-    }
-
     char contents_a[] = CONTENTS_A;
     int contents_len_a = ArrayCount(contents_a)-1;
 
@@ -128,38 +153,75 @@ WinMain(HINSTANCE hInstance,
     char contents_ab[] = CONTENTS_A CONTENTS_B;
     int contents_len_ab = ArrayCount(contents_ab)-1;
 
-    DWORD written = 0;
+    struct{
+        RenameProc proc;
+        char *name;
+    } rename_procs_and_names[] = {
+          {rename_using_MoveFileEx,                   "MoveFileEx"},
+          {rename_using_SetFileInformationByHandle,   "SetFileInformationByHandle"},
+    };
 
-    BOOL ret = WriteFile(h, contents_a, contents_len_a, &written, 0);
-    AssertMessage(ret != 0 && written == contents_len_a, "Initial WriteFile failed");
 
-#if 0
-    ret = MoveFileExW(OLD_NAME, NEW_NAME, MOVEFILE_REPLACE_EXISTING|MOVEFILE_WRITE_THROUGH);
-    AssertMessage(ret != 0, "Rename failed");
-#else
+    for(unsigned int i_proc = 0; i_proc < ArrayCount(rename_procs_and_names); ++i_proc){
+        RenameProc rename_proc = rename_procs_and_names[i_proc].proc;
+        char *rename_proc_name = rename_procs_and_names[i_proc].name;
 
-    WCHAR new_name[] = NEW_NAME;
+        printf("%s : ", rename_proc_name);
 
-    DWORD file_rename_info_size = sizeof(FILE_RENAME_INFO) + sizeof(new_name);
-    FILE_RENAME_INFO *file_rename_info = (FILE_RENAME_INFO *) malloc(file_rename_info_size);
-    memcpy(file_rename_info->FileName, new_name, sizeof(new_name));
-    file_rename_info->FileNameLength = sizeof(NEW_NAME);
-    file_rename_info->ReplaceIfExists = TRUE;
-    file_rename_info->RootDirectory = NULL;
-#endif
 
-    ret = SetFileInformationByHandle(h, FileRenameInfo, &file_rename_info, file_rename_info_size);
-    AssertMessage(ret != 0, "Rename failed");
+        HANDLE h = CreateFileW(OLD_NAME,
+                               GENERIC_READ|GENERIC_WRITE|DELETE,
+                               FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, 
+                               0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+        if (h == INVALID_HANDLE_VALUE){
+            printf("h = INVALID_HANDLE_VALUE\n");
+            return(0);
+        }
 
-    WCHAR *path = NEW_NAME;
+        DWORD written = 0;
 
-    DWORD path_len = GetFinalPathNameByHandleW(h, path, MAX_PATH, FILE_NAME_OPENED);
-    wprintf(L"File name %ls\n", path);
-    path_len = GetFinalPathNameByHandleW(h, path, MAX_PATH, FILE_NAME_NORMALIZED);
-    wprintf(L"File name %ls\n", path);
+        BOOL ret = WriteFile(h, contents_a, contents_len_a, &written, 0);
+        AssertMessage(ret != 0 && written == contents_len_a, "Initial WriteFile failed");
 
-    ret = WriteFile(h, contents_b, contents_len_b, &written, 0);
-    AssertMessage(ret != 0 && written == contents_len_a, "Second WriteFile failed");
+        rename_proc(h, OLD_NAME, NEW_NAME);
+
+        wchar_t path[MAX_PATH];
+        DWORD path_len = GetFinalPathNameByHandleW(h, path, MAX_PATH, FILE_NAME_OPENED);
+        ret = wcscmp (path + wcslen(path) - wcslen(NEW_NAME), NEW_NAME);
+        AssertMessage(ret == 0, "File does not match NEW_NAME");
+
+        ret = WriteFile(h, contents_b, contents_len_b, &written, 0);
+        AssertMessage(ret != 0 && written == contents_len_b, "Second WriteFile failed");
+
+        CloseHandle(h);
+
+        h = CreateFileW(NEW_NAME, GENERIC_READ,
+                        FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE, 
+                        0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+        if (h == INVALID_HANDLE_VALUE){
+            printf("h = INVALID_HANDLE_VALUE\n");
+            return(0);
+        }
+
+
+        long int size = 0; {
+            DWORD high_bytes;
+            DWORD read_bytes = GetFileSize(h, &high_bytes);
+            size = (((long long int)high_bytes) << 32) + read_bytes;
+        }
+
+        char * buffer = (char *) malloc(size);
+
+        DWORD bytes_read = 0;
+
+        ret = ReadFile(h, buffer, size, &bytes_read, 0);
+        AssertMessage(bytes_read == contents_len_ab && memcmp(contents_ab, buffer, bytes_read) == 0, 
+                      "File content mistmatch");
+        CloseHandle(h);
+        printf("OK\n");
+    }
+
 
     /* NOTE(mal):
        - MoveFile and MoveFileEx
