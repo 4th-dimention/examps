@@ -1,3 +1,17 @@
+/*
+** Win32 Direct Write Example Program
+**  v1.0.0 - June 16th 2021
+**  by Allen Webster allenwebster@4coder.net
+**
+** public domain example program
+** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
+**
+** *WARNING* this example has not yet been curated and refined to save
+**  your time if you are trying to use it for learning. It lacks detailed
+**  commentary and is probably sloppy in places.
+**
+*/
+
 // DirectWrite texture extraction example
 
 #include <windows.h>
@@ -78,12 +92,12 @@ int main(){
         FLOAT enhanced_contrast = base_rendering_params->GetEnhancedContrast();
         FLOAT clear_type_level = base_rendering_params->GetClearTypeLevel();
         error = dwrite_factory->CreateCustomRenderingParams(
-            gamma,
-            enhanced_contrast,
-            clear_type_level,
-            DWRITE_PIXEL_GEOMETRY_RGB,
-            DWRITE_RENDERING_MODE_NATURAL,
-            &rendering_params);
+                                                            gamma,
+                                                            enhanced_contrast,
+                                                            clear_type_level,
+                                                            DWRITE_PIXEL_GEOMETRY_RGB,
+                                                            DWRITE_RENDERING_MODE_NATURAL,
+                                                            &rendering_params);
         assert(error == S_OK);
     }
     

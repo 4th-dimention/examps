@@ -1,3 +1,18 @@
+/*
+** Win32 Direct Write Example Program
+**  v1.0.0 - June 16th 2021
+**  by Allen Webster allenwebster@4coder.net
+**
+** public domain example program
+** NO WARRANTY IMPLIED; USE AT YOUR OWN RISK
+**
+** *WARNING* this example has not yet been curated and refined to save
+**  your time if you are trying to use it for learning. It lacks detailed
+**  commentary and is probably sloppy in places.
+**
+*/
+
+
 // DirectWrite rasterization example
 
 #define UNICODE
