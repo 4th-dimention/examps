@@ -1,0 +1,1070 @@
+<html>
+<head>
+<title>DirectWrite Rasterizer Quick Start Guide</title>
+</head>
+<body style="max-width: 1360px; margin: auto;">
+<h1>DirectWrite Rasterizer Quick Start Guide</h1>
+<h3>Allen Webster, 2018-09-06</h3>
+<p>
+<i>
+Microsoft's DirectWrite text rendering technology can be integrated into a UI application in a number of ways,
+but the documentation on using DirectWrite for pre-rasterized font atlas based text rendering is fairly poor. 
+This document exists to make DirectWrite rasterization less painful by collecting techniques and API summaries in one place.
+</i>
+</p>
+<p>
+<h2>Rasterizer Summary</h2>
+</p>
+<p>
+This DirectWrite rasterizer works by rasterizing glyphs into a GDI bitmap and then blitting the glyph into our own texture atlas
+which will be used in the rest of the rendering.  The rasterizer as shown here will preserve the information needed for ClearType
+anti-aliasing, but can be easily adapted to be a grayscale rasterizer.  (But why bother with DirectWrite
+if you're not trying to leverage it's built-in ClearType anti-aliasing?  That's literally all it has to offer over
+<span style="color:#ff0000;">insert your favorite text rasterizing method</span>.)
+</p>
+<p>
+The trick with DirectWrite's ClearType anti-aliasing is that once you have the glyphs in your renderable texture format, you shouldn't
+be blending it on render like you normally would for grayscale text.  Any sub-pixel anti-aliasing scheme would require a separate per-channel
+RGB blend, and DirectWrite's ClearType anti-aliasing requires another adjustment.  The good news is it doesn't take anything too fancy
+in a renderer to implement any of these blend rules, at least as long as you aren't getting too fancy with smoothly animated moving text or text
+colors, in particular slight sub-pixel sliding is not covered by this article, and rendering text with anything other than single-color-per-glyph
+greatly complicates the blending problem.
+</p>
+<p>
+This quick start guide will be organized into the following sections:
+<ol>
+<li><a href= "#section_api">
+Lists and describes the parts of the DirectWrite API that this rasterizer needs and includes a single glyph rasterization example.
+</a></li>
+<li><a href= "#section_subpixel">
+Sets up the appropriate mental model for blending sub-pixel textures and provides techniques to cleanly and easily achieve the effect.
+</a></li>
+<li><a href= "#section_blendcurve">
+Describes the specific quirks to blending in the DirectWrite style and provides techniques to help deal with them.
+</a></li>
+<li><a href= "#section_api_issues">
+Tips for properly handling the API, including avoiding memory leakage, understanding lifetimes, and handling subtle design issues.
+</a></li>
+<li><a href= "#section_example_rasterizer">
+The fully assembled example rasterizer.
+</a></li>
+<li><a href= "#section_higher_versions">
+Some issues that could be handled with higher DirectWrite versions than this rasterizer is using.
+</a></li>
+</ol>
+</p>
+
+<p>
+<h2 id="section_api">Getting Rasterized Textures from DirectWrite</h2>
+</p>
+
+<p>
+<h3>Dependencies</h3>
+</p>
+<p>
+DirectWrite is a very large API with optional integration into Direct2D and GDI.
+We want to initialize and depend upon the smallest possible subset of the API that we absolutely need for rasterizing, to this end the solution
+I recommend depends only on DirectWrite and GDI. DirectWrite does not support returning data to you directly, it relies on one of either GDI or
+D2D to do the return, and in the case of D2D it then relies, in turn, on D3D to actually do the return, so the dependency on GDI is the better option.
+</p>
+<p>
+The simplest way to setup the rasterizer is to supply our own ttf files, but this severly limits our ability to extract information
+about font families, and the various style options within a family.  There are three options to fix this, one would be to use a very
+restricted newer version (DirectWrite 3) which does extract this information right from the font data supplied through the ttf
+(<a href="#highver_FontMetadata">learn more</a>), the second option is to provide all that meta data yourself along with the ttf files,
+and the third is to get fonts installed with the system instead of providing the ttfs manually.
+</p>
+<p>
+For all of the features we need in this rasterizer we only depend on the very first version of DirectWrite, but there are a few
+features that would be really nice to have that require higher versions.  After showing the simplest
+rasterizer I will discuss the ways that newer versions could make things a little nicer if we're willing to use any of them.
+</p>
+<p id="dep_version_table">
+<b>The DirectWrite Versions Dependencies Table</b>
+</p>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><th>DirectWrite versions</th>    <th>Supported OS version</th>
+    <th>Header File</th>             <th>Library File</th></tr>
+<tr><td>DirectWrite</td>             <td>Windows Vista SP2 or Windows 7 or higher</td>
+    <td><code>dwrite.h</code></td>   <td><code>dwrite.lib</code></td>  </tr>
+<tr><td>DirectWrite 1</td>           <td>Windows 7 Platform Update or Windows 8 or higher</td>
+    <td><code>dwrite_1.h</code></td> <td><code>dwrite.lib</code></td></tr>
+<tr><td>DirectWrite 2</td>           <td>Windows 8.1 or higher</td>
+    <td><code>dwrite_2.h</code></td> <td><code>dwrite.lib</code></td></tr>
+<tr><td>DirectWrite 3</td>           <td>Windows 10</td>
+    <td><code>dwrite_3.h</code></td> <td><code>dwrite.lib</code></td></tr>
+</table>
+<div><small>OS Version information taken directly from Microsoft documentation without any testing.</small></div>
+</p>
+<p>
+In addition to including and linking <i>only one</i> of the above DirectWrite versions, our rasterizer will also include <code>windows.h</code> and
+link to <code>gdi32.lib</code> in addition to all the standard stuff we need to setup a window and an OpenGL context.
+</p>
+<p>
+<b>The succinct list of DirectWrite interfaces, calls, and structs used in this DirectWrite rasterizer.</b>
+</p>
+<p>
+<small>
+(My apologies if any of these links go stale, or link to pages with lots of missing documentation.
+I do not intend to maintain these lists.
+Later I will describe the details that are relevant anyway so Microsoft's documentation is just here for backup.)
+</small>
+</p>
+<ul>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd368040(v=vs.85).aspx">DWriteCreateFactory</a></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd368183(v=vs.85).aspx">IDWriteFactory</a>
+ <ul>
+ <li>CreateFontFileReference</li>
+ <li>CreateFontFace</li>
+ <li>CreateRenderingParams</li>
+ <li>CreateCustomRenderingParams</li>
+ <li>GetGdiInterop</li>
+ </ul></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd371060(v=vs.85).aspx">IDWriteFontFile</a></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd370983(v=vs.85).aspx">IDWriteFontFace</a>
+ <ul>
+ <li>GetMetrics</li>
+ <li>GetGlyphCount</li>
+ <li>GetGlyphIndices</li>
+ </ul></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd371285(v=vs.85).aspx">IDWriteRenderingParams</a>
+ <ul>
+ <li>GetClearTypeLevel</li>
+ <li>GetEnhancedContrast</li>
+ <li>GetGamma</li>
+ <li>GetPixelGeometry</li>
+ <li>GetRenderingMode</li>
+ </ul></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd371172(v=vs.85).aspx">IDWriteGdiInterop</a>
+ <ul>
+ <li>CreateBitmapRenderTarget</li>
+ </ul></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/en-us/library/windows/desktop/dd368165(v=vs.85).aspx">IDWriteBitmapRenderTarget</a>
+ <ul>
+ <li>GetMemoryDC</li>
+ <li>DrawGlyphRun</li>
+ </ul></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/de-de/library/windows/desktop/dd368074(v=vs.85).aspx">DWRITE_FONT_METRICS</a></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/de-de/library/windows/desktop/dd368084(v=vs.85).aspx">DWRITE_GLYPH_METRICS</a></li>
+<li><a target="_blank" href= "https://msdn.microsoft.com/de-de/library/windows/desktop/dd368089(v=vs.85).aspx">DWRITE_GLYPH_RUN</a></li>
+</ul>
+<p>
+<b>The succinct list of GDI calls used in this DirectWrite rasterizer.</b>
+</p>
+<p>
+<small>
+(I am not keeping links to these because Microsoft's GDI documentation seems to be really unstable these days.)
+</small>
+</p>
+<ul>
+<li>SelectObject</li>
+<li>SetDCPenColor</li>
+<li>SetDCBrushColor</li>
+<li>Rectangle</li>
+<li>GetCurrentObject</li>
+<li>GetObject</li>
+<li>DIBSECTION</li>
+</ul>
+
+<p>
+<h3>Code Notes</h3>
+</p>
+<p>
+<b>IDWriteFactory, DWriteCreateFactory</b>
+</p>
+<p>
+Initializing the factory interface initializes DirectWrite and provides access to methods for creating everything else, the factory will always come first.
+</p>
+<p>
+<pre><code>IDWriteFactory *dwrite_factory = 0;
+HRESULT error = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**)&amp;dwrite_factory);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>IDWriteFontFile, CreateFontFileReference</b>
+</p>
+<p>
+A IDWriteFontFile refers to a particular file, this is the mechanism that will allow us to set the font by supplying a ttf directly.
+The file name must be in UCS2, whether or not you're using windows with <code>#define UNICODE</code>.
+</p>
+<p>
+<pre><code>IDWriteFontFile *font_file = 0;
+HRESULT error = dwrite_factory-&gt;CreateFontFileReference(font_path, 0, &amp;font_file);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>IDWriteFontFace, CreateFontFace</b>
+</p>
+<p>
+An IDWriteFontFace refers to renderable in-memory font data.  This can come from various sources but in our case we're getting it from the IDWriteFontFile.
+The most concerning part of the CreateFontFace call is that it asks you for the format of the file.  How are you supposed to know that if you're not using
+a file that you picked by hand?  Well the API has nothing to say about that, it's up to you to do what you want.  Since we're the ones picking the file
+we're fine here, but if you'd like to adapt this rasterizer so that users can supply new fonts at runtime you'll have to decide what to do about this.
+</p>
+<p>
+<pre><code>IDWriteFontFace *font_face = 0;
+HRESULT error = dwrite_factory-&gt;CreateFontFace(DWRITE_FONT_FACE_TYPE_TRUETYPE, 1, &amp;font_file, 0, DWRITE_FONT_SIMULATIONS_NONE, &amp;font_face);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>IDWriteRenderingParams, CreateRenderingParams, CreateCustomRenderingParams,
+GetGamma, GetEnhancedContrast, GetClearTypeLevel, GetPixelGeometry, GetRenderingMode</b>
+</p>
+<p>
+We need an IDWriteRenderingParams to pass to the final draw method.  The "custom" version lets us set all the parameters we want.
+The "non-custom" version let's us get the default values for the parameters.  The default values are system settings that the user
+can control from the control panel and the ClearType tuner, so you can't count on it to be the same everywhere.
+</p>
+<p>
+<pre><code>IDWriteRenderingParams *default_rendering_params = 0;
+IDWriteRenderingParams *rendering_params = 0;
+HRESULT error = dwrite_factory-&gt;CreateRenderingParams(&amp;default_rendering_params);
+assert(error == S_OK);
+error = dwrite_factory-&gt;CreateCustomRenderingParams(default_rendering_params-&gt;GetGamma(),
+                                                    default_rendering_params-&gt;GetEnhancedContrast(),
+                                                    default_rendering_params-&gt;GetClearTypeLevel(),
+                                                    default_rendering_params-&gt;GetPixelGeometry(),
+                                                    default_rendering_params-&gt;GetRenderingMode(),
+                                                    &amp;rendering_params);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>IDWriteGdiInterop, GetGdiInterop</b>
+</p>
+<p>
+The IDWriteGdiInterop is simply an interface that hosts a few methods related to getting DirectWrite to work together with GDI.
+Note we are not "creating" this interface we are merely "getting" it, this is our clue that we shouldn't be releasing the interface pointer later.
+We are using the IDWriteGdiInterop to create a bitmap render target, it can also be used to convert between GDI font resources and
+DirectWrite font interfaces if you are looking for another way to get your IDWriteFontFace.
+</p>
+<p>
+<pre><code>IDWriteGdiInterop *dwrite_gdi_interop = 0;
+HRESULT error = dwrite_factory-&gt;GetGdiInterop(&amp;dwrite_gdi_interop);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>DWRITE_FONT_METRICS, GetMetrics</b>
+</p>
+<p>
+DWRITE_FONT_METRICS contains scale information for converting design units (how everything gets returned to us) to pixels (assuming we know our DPI this API
+doesn't handle that for us).  It also contains line spacing information and various universal dimensions, which can be useful for predicting how big the
+intermediate backing buffer of the render target needs to be to always contain the entire glyph for every glyph in the font.
+The texture extractor does not need this, but the full rasterizer will.
+</p>
+<p>
+<pre><code>DWRITE_FONT_METRICS font_metrics = {0};
+font_face-&gt;GetMetrics(&amp;font_metrics);</code></pre>
+</p>
+<p>
+<b>GetGlyphCount</b>
+</p>
+<p>
+This tells us the total number of glyphs the font can rasterize for us, and since glyphs are rasterized by index we can use this as the limit of a loop
+that gathers baked versions of every glyph in the font.  The texture extractor does not need this, but the full rasterizer will.
+</p>
+<p>
+<pre><code>uint16_t glyph_count = font_face-&gt;GetGlyphCount();</code></pre>
+</p>
+<p>
+<b>DWRITE_GLYPH_METRICS, GetDesignGlyphMetrics</b>
+</p>
+<p>
+DWRITE_GLYPH_METRICS contains scale and advance information pertaining to a single glyph.  I caution against relying on it to find a bounding box as
+it does not take into account the softening filter that is applied to a glyph when creating the three wide sub-pixel texture.  I found that the only reliable
+way to get the bounding box of a glyph was the bounding box returned after rendering the glyph.  However, this is still the right way to get advance information.
+The texture extractor does not need this, but the full rasterizer will.
+</p>
+<p>
+<pre><code>DWRITE_GLYPH_METRICS glyph_metrics = {0};
+error = face->GetDesignGlyphMetrics(&glyph_index, 1, &glyph_metrics, FALSE);</code></pre>
+</p>
+<p>
+<b>IDWriteBitmapRenderTarget, CreateBitmapRenderTarget</b>
+</p>
+<p>
+The IDWriteBitmapRenderTarget is an interface to the actual pixel data where our draw operations will be recorded.
+Note that we're calling through the GDI interop pointer not the factory.
+When we create the render target we set it's dimensions.  It is up to us to make sure that everything we render onto the bitmap will actually fit and after
+rendering to the target it's a good idea to make sure the bounding box of the glyph actually did fit in the target.
+</p>
+<p>
+<pre><code>IDWriteBitmapRenderTarget *render_target = 0;
+HRESULT error = dwrite_gdi_interop-&gt;CreateBitmapRenderTarget(0, width, height, &amp;render_target);
+assert(error == S_OK);</code></pre>
+</p>
+<p>
+<b>GetMemoryDC</b>
+</p>
+<p>
+This method returns a GDI style HDC that will allow us to make GDI calls that render to the same backing buffer as the IDWriteBitmapRenderTarget.
+</p>
+<p>
+<pre><code>HDC dc = render_target-&gt;GetMemoryDC();</code></pre>
+</p>
+<p id="desc_GetGlyphIndices">
+<b>GetGlyphIndices</b>
+</p>
+<p>
+The interface we are using renders glyph indices not characters/codepoints.  Glyph indices are different in every font so we have to use this call
+to get the glyph index for our desired codepoint before we render.
+</p>
+<p>
+<pre><code>uint32_t codepoint = '?';
+uint16_t index = 0;
+HRESULT error = font_face-&gt;GetGlyphIndices(&amp;codepoint, 1, &amp;index);
+assert(error == S_OK);</code></pre>
+</p>
+<p id="desc_DrawGlyphRun">
+<b>DWRITE_GLYPH_RUN, DrawGlyphRun</b>
+</p>
+<p>
+Finally all the pieces can come together when we call DrawGlypRun.  This call actually colors the bits on the backing buffer of the IDWriteBitmapRenderTarget.
+</p>
+<p>
+<pre><code>DWRITE_GLYPH_RUN glyph_run = {0};
+glyph_run.fontFace = font_face;
+glyph_run.fontEmSize = point_size*96.f/72.f;
+glyph_run.glyphCount = 1;
+glyph_run.glyphIndices = &amp;index;
+RECT bounding_box = {0};
+HRESULT error = render_target-&gt;DrawGlyphRun(raster_target_x, raster_target_y, DWRITE_MEASURING_MODE_NATURAL, &amp;glyph_run, rendering_params, fore_color, &amp;bounding_box);
+assert(error == S_OK);</code></pre>
+</p>
+
+<p>
+<h3>Code Example</h3>
+</p>
+<p><a target="_blank" href="example_texture_extraction.cpp">example_texture_extraction.cpp</a></p>
+<p>
+In addition to acting as example code for the DirectWrite API, this texture extractor is a handy way to get a bitmap showing us exactly how a glyph appears
+directly produced by DirectWrite for examination and checking if artifacts in our rasterizer come from our bugs or from DirectWrite.
+</p>
+
+<p>
+<h2 id="section_subpixel">Blending for Sub-Pixel Anti-Aliasing</h2>
+</p>
+<p>
+Getting information out of DirectWrite is not the whole story, we also have to setup the render time system to actually use the sub-pixel data correctly.
+</p>
+<p>
+<b>A Quick Review of the Basic Idea of Sup-Pixel Anti-Aliasing</b>
+</p>
+<p>
+With sup-pixel anti-aliasing the whole idea is that the screen is organized into pixels with three vertical bands "RGB".  If the "B" of one pixel is very
+close to the "R" of the next pixel over, then, as the idea goes, a blue pixel on the left edge of a white pixel should still look white.  If X represents
+an "off" sub-pixel and R G and B represent "on" sub-pixels then the idea is that the following should not appear, at normal resolution, to have a blue pixel
+or a red pixel, even though it technically does.
+<div><code>XXBRGBRGBRXX</code></div>
+</p>
+<p>
+A similar idea works for black on a white background.  The idea is that the following pixel pattern should not appear to have a yellow pixel (RG) or
+a cyan pixel (GB), even though it technically does, because we are hoping the eye will group the RG with the B to it's left, and the GB to the R
+on the right.
+<div><code>RGBRGXXXXXXXXGBRGB</code></div>
+</p>
+<p>
+However, "on" and "off" is an oversimplification.  What we actually get back from DirectWrite when we render white text on a black background is the intensity
+of each sup-pixel for White-on-Black text.  Inspecting an enlarged version of such a glyph from our extractor reveals that DirectWrite fades intensities
+in and out across the boundary of the glyph.
+</p>
+<img src="example-glyph.png">
+<img src="example-glyph-bow.png">
+<div>
+<small>'?'; Arial; 24 pt; 8x enlargement; example_texture_extraction.cpp</small>
+</div>
+<p>
+So for white-on-black rendering we take the intensity of each sub-pixel and render that into the corresponding channel.  For black-on-white we essentially
+take the intensity of each sup-pixel and render <code>1-intensity</code> into the channel.  If you actually crunch the numbers on these two images you
+will find they do not correspond to a direct inversion, we will discuss the quirks of DirectWrite's non-linear blending in the next section.  For now hopefully
+visual inspection roughly convinces you that they are <i>basically</i> inversions of eachother.  Bright yellow becomes dark blue, mid-tone cyan becomes mid-tone
+red, white becomes black, etc.
+</p>
+<p>
+<b>Generalizing White-on-Black and Black-on-White to Any-Color-on-Any-Color</b>
+</p>
+<p>
+That's how it works for white on black and black on white, but how does it generalize if we want to support any colors?  We can't treat the colors we
+extract from DirectWrite in the white-on-black case as just a color to be blended using the familiar alpha blending equation:
+</p>
+<div><code>out_color = alpha*fore_color + (1 - alpha)*back_color;</code></div>
+<p>
+This equation is completely wrong for us.  First, there's the obvious type-system mismatch problem that we only have one 'slot' for a foreground color, but
+we sort of have two foreground colors now, one sampled from the texture and the other which is the desired aparent color of the glyph.  On top of that
+this equation would fail even to produce the color inversion we observe for black-on-white text, so it fails the experimental test as well.  I could
+go on, but hopefully the point is clear.
+</p>
+<p>
+The best way to think about blending with sub-pixel anti-aliasing is to imagine that your source texture encodes three alpha values per pixel, or if you prefer
+(as I do) a "mask" for that pixel, with a separate masking value for each channel in the pixel.  The mask can range from 0, meaning "never effect this channel of
+this pixel", to 1, meaning "completely replace the background value with the foreground value in this channel of this pixel".
+As an equation our sub-pixel blend looks like:
+</p>
+<div><pre><code>out_r = M_r*fore_r + (1 - M_r)*back_r;
+out_g = M_g*fore_g + (1 - M_g)*back_g;
+out_b = M_b*fore_b + (1 - M_b)*back_b;</code></pre></div>
+<p>
+In this concept of a blend equation, the M values come from the texture, the fore color is a uniform value across the entire render primitive and the back
+color, as always, comes from the destination buffer.
+</p>
+<p>
+As a quick sanity check of this equation, let's take a look at how this captures the color inversion between white-on-black and black-on-white. Note that M does
+not change between the two cases, the mask values are fixed and independent of the specific render case.
+</p>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><th>Variable</th>               <th>White-on-Black</th>            <th>Black-on-White</th>                 </tr>
+<tr><td>fore_r, fore_g, fore_b</td> <td>1, 1, 1</td>                   <td>0, 0, 0</td>                        </tr>
+<tr><td>back_r, back_g, back_b</td> <td>0, 0, 0</td>                   <td>1, 1, 1</td>                        </tr>
+<tr><td>out_r</td>                  <td>M_r*1 + (1 - M_r)*0 = M_r</td> <td>M_r*0 + (1 - M_r)*1 = (1 - M_r)</td></tr>
+<tr><td>out_g</td>                  <td>M_g*1 + (1 - M_g)*0 = M_g</td> <td>M_g*0 + (1 - M_g)*1 = (1 - M_g)</td></tr>
+<tr><td>out_b</td>                  <td>M_b*1 + (1 - M_b)*0 = M_b</td> <td>M_b*0 + (1 - M_b)*1 = (1 - M_b)</td></tr>
+</table>
+<p>
+<b>How We Achieve Per-Channel Blending in OpenGL</b>
+</p>
+<p>
+To avoid complications to typical renderers it is important that we find a way to achieve the blending rule described without actually trying to sample from
+the destination texture which, at least for OpenGL renderers, is not an ideal situation.  A google search of how to make this work will yield a lot of
+people suggesting that you just have to pass the background color down as a uniform, and only ever render to single color backgrounds.  However there is
+actually a way to get the blend to work using just the blend unit... just so long as we only render with uniform foreground colored glyphs.
+In OpenGL the calls that achieve the appropriate blend are:
+</p>
+<div><pre><code>glBlendFunc(GL_CONSTANT_COLOR, GL_ONE_MINUS_SRC_COLOR);
+glBlendColor(fore.r, fore.g, fore.b, fore.a);</code></pre></div>
+<p>
+With the blend unit setup like this, the only thing left for the shader to do is to output the masking value M which it samples from the texture.
+That way the constant color, the foreground color, gets multiplied by the mask color returned from the shader, and then one minus the mask color
+is multiplied by the background.
+</p>
+<p>
+There are a few things we still want to think through at this point.  First there shouldn't be any linear interpolation when sampling from the texture and idealy
+we shouldn't even be in a situation where we are sampling off the pixel centers anyway.  We want to treat this texture as if it was finely tuned by DirectWrite
+for the specific  sub-pixel placement we rasterized to at bake time.  Second we may still want to have text with a foreground color that supports an alpha 
+value besides 1. So after we sample the mask from the texture we should multiply the foreground alpha into our masks before returning them from the shader.
+</p>
+<p>
+With all that in mind the GLSL shader we need looks something like this:
+</p>
+<div><pre><code>smooth in vec2 uv;
+uniform sampler2D tex;
+uniform vec4 fore_color;
+layout(location = 0) out vec4 color;
+
+void main(){
+    color.rgb = texture(tex, uv);
+    color.rgb *= fore_color.a;
+    color.a = 1;
+}</code></pre></div>
+
+<p>
+<h2 id="section_blendcurve">Blending for DirectWrite</h2>
+</p>
+<p>
+Now we know the basics of how to blend with sub-pixel anti-aliasing in the general case, but there are some unique quirks to the ClearType style
+look that DirectWrite creates that are meant to help avoid color fringing by adaptively changing the blend factors.  Luckily these adjustments do
+not change the blend equation that we setup.  These blend equations still hold true:
+</p>
+<div><pre><code>out_r = M_r*fore_r + (1 - M_r)*back_r;
+out_g = M_g*fore_g + (1 - M_g)*back_g;
+out_b = M_b*fore_b + (1 - M_b)*back_b;</code></pre></div>
+<p>
+<b>M cannot be pulled directly from the texture after all.</b>
+</p>
+<p>
+To say that M is just the color pulled from the texture that we get from DirectWrite when we render a white glyph onto a black background
+is an oversimplification.  The math in the table in the previous section suggests that rendering white-on-black gives us the M values, and we derived
+that from the blend equation, so if the blend equation holds, why aren't we getting the correct M values from this approach?  The answer is that the
+M value at a specific channel in a specific pixel in a specific glyph is actually not a fixed value but a non-linear function of several variables.
+</p>
+<p>
+In the previous section I focussed on the pixel-level blend equation and broke the equation out into the separate equations for each channel, but now
+we are studying the function of M, and the same function applies in every channel, so now I will focus on the channel-level equation:
+</p>
+<div><pre><code>out = M*fore + (1 - M)*back;</code></pre></div>
+<p>
+Once we are familiar with the function M, I will put the pieces back together.
+</p>
+<p>
+<b>Clusters</b>
+</p>
+<p>
+Before I lay out how to evaluate M I have to discuss it's most unusual variable, the cluster index, or C.  It turns out that DirectWrite assigns each sub-pixel
+to one of seven possible clusters.  I call them "clusters" because every sub-pixel of the same cluster will have identical intensity values across the glyph
+given a fixed foreground color and background color for the whole glyph, so that when you make a histogram of the intensities of sub-pixels, you see a
+completely discrete distribution with every sample falling into one of the seven clusters.  Each cluster corresponds to a different level of intensity.
+This is where we start seeing arbitrarily tuned numbers that just "are what they are".  In the following table we see the M value of each cluster when
+the foreground color is white and when the foreground color is black.  When the foreground color is white we get the minimum value for the cluster, and when 
+the foreground is black we get the maximum value for the cluster.
+</p>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><th>Cluster Index (C)</th> <th>M Value for Black Foreground (Max)</th> <th>M Value for White Foreground (Min)</th></tr>
+<tr><td>0</td>                 <td>  0/255 = 0.000000000</td>              <td>0/6 = 0.000000000</td>                 </tr>
+<tr><td>1</td>                 <td> 97/255 = 0.380392157</td>              <td>1/6 = 0.166666667</td>                 </tr>
+<tr><td>2</td>                 <td>153/255 = 0.600000000</td>              <td>2/6 = 0.333333333</td>                 </tr>
+<tr><td>3</td>                 <td>191/255 = 0.749019608</td>              <td>3/6 = 0.500000000</td>                 </tr>
+<tr><td>4</td>                 <td>218/255 = 0.854901961</td>              <td>4/6 = 0.666666667</td>                 </tr>
+<tr><td>5</td>                 <td>239/255 = 0.937254902</td>              <td>5/6 = 0.833333333</td>                 </tr>
+<tr><td>6</td>                 <td>255/255 = 1.000000000</td>              <td>6/6 = 1.000000000</td>                 </tr>
+</table>
+<p>
+Now I can reveal the <i>real</i> reason why we render white-on-black in the bake phase.  It's not just because that gives us the equation:
+<code>baked_out = M*1 + (1 - M)*0 = M</code>.  It's also because the M values we get can then be converted to a cluster index by simply
+multiplying by six and rounding to the nearest integer.
+</p>
+<p>
+<b>Magical Subjective Brightness Equation</b>
+</p>
+<p>
+The other variable of M is some sort of "subjective brightness value" or V as I will call it from now on.  There is not much to say about what V means
+except that it appears to be an equation tuned to roughly give an idea of how bright a particular color appears.  It assigns a different weight to each
+channel of the foreground color and combines them linearly.  The equation is:
+</p>
+<div><code>V = fore_r*0.5 + fore_g + fore_b*0.1875;</div></code>
+<p>
+The fact that different colors are being treated differently has the potential to be confusing so I want to emphasize again that the computation of M
+is the same for all sub-pixels regardless of what color the sub-pixel is.  The only difference between colors arises from the selection of the foreground
+color not from the blending of sub-pixels, and even then the only difference between colors is that they have different levels of contribution to V.
+</p>
+<p>
+<b>A Good Approximation for M</b>
+</p>
+<p>
+Now we are ready to see how M is computed.  M is a function of C and V.  I will use Cmin and Cmax to denote the minimum and maximum values of a particular cluster.
+This sections will use a linear approximation of the interpolation from Cmax down to Cmin even though DirectWrite has a bit of soft curvature in the interpolation.
+</p>
+<p>
+The function M can be thought of as a piecewise function with respect to V, with three major pieces.
+Firstly note that V ranges from 0 to 0.5 + 1 + 0.1875 = 1.6875.
+In the range [0,0.839215686374509] (as in [0,214/255]) M = Cmax.
+In the range [1.266666666666667,1.6875] (as in [323/255,1.6875]) M = Cmin.
+In the range [0.839215686374509,1.266666666666667] we will use a linear interpolation from Cmax down to Cmin.  The DirectWrite renderer here uses a strictly
+decreasing set of curves, the curves are different for each cluster in degree of curvature, but all are close enough to linear that it is not particularly
+concerning to discard that fine tuning for now.  In order to express a linear interpolation from Cmax down to Cmin over the range
+[0.839215686374509,1.266666666666667] I will use the function <code>unlerp(A,x,B) = (x-A)/(B-A)</code> to take the range
+[0.839215686374509,1.266666666666667] to [0,1].  Then I will use the function <code>lerp(A,x,B) = A + (B - A)*x;</code> to take [0,1] to [Cmax,Cmin].
+To capture the flat ranges I will finally clamp the result to Cmin, Cmax with the function <code>clamp(Mi,x,Ma) = median of {Mi,x,Ma}</code>.
+</p>
+<p>
+With all of that, a rough draft of our new shader code looks like:
+</p>
+<div><pre><code>S = texture(tex, uv);
+C = int(S*6 + 0.1); // + 0.1 just in case we have some small rounding taking us below the integer we should be hitting, + 0.5 risks rounding up.
+Cmin = lookup_somehow_Cmin(C);
+Cmax = lookup_somehow_Cmax(C);
+V = fore.r*0.5 + fore.g + fore.b*0.1875;
+A = 0.839215686374509; // 214/255
+B = 1.266666666666667; // 323/255
+M = clamp(Cmin, lerp(Cmax, unlerp(A, V, B), Cmin), Cmax);
+</code></pre></div>
+<p>
+<b>A Better Version of an Equally Good Approximation for M</b>
+</p>
+<p>
+Recall that what I said about why clusters are called clusters in the section entitled clusters.  If it's true that there are only seven possible values
+across every sub-pixel in the entire glyph, why are we doing all this work in the shader involving linear functions and clamps?  We can compute V before
+we ever invoke the shader, and then we can fill a table with the values <code>{ M(0,V), M(1,V), M(2,V), ... M(6,V) }</code> and then submit that table to
+the shader as a uniform.  Then all the shader has left to do is determine the cluster index for each sub-pixel and look up it's value in the table.
+Our shader rough draft would then look like:
+</p>
+<div><pre><code>S = texture(tex, uv);
+C = int(S*6 + 0.1); // + 0.1 just incase we have some small rounding taking us below the integer we should be hitting, + 0.5 risks rounding up.
+M = M_value_table[C];
+</code></pre></div>
+<p>
+<b>What Our Shader Really Looks Like When We Put it All Together</b>
+</p>
+<p>
+<a target="_blank" href="example_rasterizer_frag.glsl">example_rasterizer_frag.glsl</a>
+</p>
+<div><pre><code>smooth in vec3 uv;
+uniform sampler2DArray tex;
+uniform float M_value_table[7];
+layout(location = 0) out vec4 mask;
+
+void main(){
+    vec3 S = texture(tex, uv).rgb;
+    int C0 = int(S.r*6 + 0.1); // + 0.1 just incase we have some small rounding taking us below the integer we should be hitting.
+    int C1 = int(S.g*6 + 0.1);
+    int C2 = int(S.b*6 + 0.1);
+    mask.rgb = vec3(M_value_table[C0],
+                    M_value_table[C1],
+                    M_value_table[C2]);
+    mask.a = 1;
+}
+</code></pre></div>
+<p>
+Note that we need to multiply the alpha value of the foreground color into the values of  M_value_table now because this shader isn't doing that 
+work.  The nice part of this change is that with the responsibility of multiplying alpha put onto the CPU there is no need to send the foreground
+color to the shader, this way the GPU only needs one copy of the color, the one in the blend unit, and since M_value_table already depends on the
+other components of the foreground color this doesn't add any additional complexity to the organization of the code.
+</p>
+<p>
+<b>Concerns About Gamma</b>
+</p>
+<p>
+For any sub-pixel anti-aliasing you have to be especially careful about how you are treating colors, and DirectWrite's ClearType is no exception.  The
+entire effect of sub-pixel anti-aliasing revolves around emphasizing the brightness or darkness of a shape by having a little bit of contribution from
+sub-pixels that would otherwise have been unaffected by the object.  The brightness of a sub-pixel is tuned to ensure it contributes what it can without
+appearing as another color entirely.  Incorrect gamma handling can easily become a source of color fringing by failing to correctly fade out intensities
+of sub-pixels.  For instance imagine text renderered white-on-black where an edge pixel is tuned to have a strong red value, a medium green value, and a
+soft blue value.  If the values are blended in gamma space instead of in linear space the actual output will be more like strong red, soft green, very
+soft blue, making the pixel appear more red than it should.
+</p>
+<p>
+There are two stages to handling gamma correctly.  First, you must make sure you are setting the gamma correction parameter for DirectWrite
+to <code>1.0f</code> so that it is giving you colors in linear space.  DirectWrite uses it's gamma value for converting in text colors and for
+converting out the final results of it's blending.  Since we only end up using cluster indices, fixing this parameter technically
+does not effect the correctness of our rasterizer, but if we want to inspect results from the texture extractor numerically we should make this change.
+I don't have any compelling evidence that suggests DirectWrite can perform it's internal blends more quickly with gamma set to one, but this would be 
+the setting that enables it to optimize out the gamma conversions if it does support such an optimization.
+</p>
+<p>
+Second, you have to remember that after doing all of your rendering in linear color space your own renderer now needs to convert back out of linear space
+into gamma space.  In the rasterizer presented here, I perform gamma corrections using OpenGL's SRGB textures and an intermediate framebuffer object.
+</p>
+
+<p>
+<h2 id="section_api_issues">Carefully Handling DirectWrite, Leakage, Lifetimes, and Design Issues</h2>
+</p>
+<p>
+While the first section lays out all the basics for getting the rasterized bitmap so that you can take over from there,
+it leaves out some important details about the API that will come up and bother you as you try to do something real with DirectWrite.
+</p>
+<p>
+<b>Error handling and why checking the return error code isn't always enough.</b>
+</p>
+<p>
+The first thing that needs to be improved in a real rasterizer is that you probably want a better method in mind for handling the case when
+any one of these calls returns something other than S_OK.  On top of that, it is not enough to only check the returned HRESULT,
+you also need to always check the pointer you get back from a Create or Get call that returns an interface through an output pointer
+parameter.  Not every single method in the API has this potential but keeping track of which do and don't is a lot more trouble than just
+always checking the pointer.  However writing lots of checks gets tedious fast, so I have relied on these macros:
+</p>
+<pre><code>#define DWCheck(error,r)        if ((error) != S_OK){ error = S_OK; r; }
+#define DWCheckPtr(error,ptr,r) if ((ptr) == 0 || (error) != S_OK){ error = S_OK; r; }
+// usage
+void foo(){
+    IDWriteThing *thing = 0;
+    HRESULT error = CreateThing(&amp;thing);
+    DWCheckPtr(error, thing, return);
+    
+    IDWriteThing *other_thing = 0;
+    error = GetThing(&amp;other_thing);
+    DWCheckPtr(error, other_thing, return);
+    
+    error = thing-&gt;DoOperation();
+    DWCheck(error, return);
+    
+    for (begin_loop(); good_loop(); next_loop_step()){
+        IDWriteThing *little_thing = 0;
+        error = TryLittleThing(&amp;little_thing);
+        DWCheckPtr(error, little_thing, continue);
+    }
+}
+</code></pre>
+<p>
+</p>
+<p>
+<b>Make sure you are releasing <i>everything</i>.</b>
+</p>
+<p>
+All interface pointers need to be freed by calling the <code>Release</code> method when their use is finished.
+I use the following automated release method.
+</p>
+<pre><code>struct AutoReleaserClass{
+    IUnknown *ptr_member;
+    AutoReleaserClass(IUnknown *ptr){
+        ptr_member = ptr;
+    }
+    ~AutoReleaserClass(){
+        if (ptr_member != 0){
+            ptr_member-&gt;Release();
+        }
+    }
+};
+#define DeferRelease(ptr) AutoReleaserClass ptr##_releaser(ptr)
+// usage
+IDWriteThing *foo(){
+    IDWriteThing *thing = 0;
+    HRESULT error = CreateThing(&amp;thing);
+    DeferRelease(thing);
+    DWCheckPtr(error, thing, return);
+    
+    IDWriteThing *other_thing = 0;
+    error = GetThing(&amp;other_thing);
+    // we want other_thing to last past the end of this scope, so no DeferRelease
+    DWCheckPtr(error, other_thing, return);
+    
+    error = thing-&gt;DoOperation();
+    DWCheck(error, return);
+    
+    for (begin_loop(); good_loop(); next_loop_step()){
+        IDWriteThing *little_thing = 0;
+        error = TryLittleThing(&amp;little_thing);
+        DeferRelease(thing);
+        DWCheckPtr(error, little_thing, continue);
+    }
+    
+    return(other_thing);
+}
+</code></pre>
+<p>
+This will automatically release any pointer you pass to the <code>DeferRelease</code> macro, no problem, just make sure you defer the release <i>before</i> doing
+the error check, or else you might have a valid pointer that needs to be freed but fail because of the error code, and therefore never mark the pointer
+for freeing before the scope is closed.
+</p>
+<p>
+<b>There's a call you'd probably like to have that is missing in the first version of DirectWrite.</b>
+</p>
+<p>
+As described above we have to convert our text stream into a series of glyph indices via
+<code><a href="#desc_GetGlyphIndices">GetGlyphIndices</a></code> to create and render a glyph run via
+<code><a href="#desc_DrawGlyphRun">DrawGlyphRun</a></code>.  Durring the initial bake of the texture data, it would be nice to build a data
+structure that will allow us to map characters to glyph data for all characters.  Depending on the requirements for your font handling there are several
+ways you might want to structure such a mapping, but the bad news is that the oldest DirectWrite does not support some of those options very easily.
+</p>
+<p>
+In particular if you wanted to always support all of the characters that a font supports when you bake it, the ideal solution would be to query 
+the font for the set of characters it can support and build a table mapping all of those characters to their indices, then baking the information for all the
+indices that you need.  Unfortunately, this is essentially unachievable in the oldest version of DirectWrite.  You can ask for the
+mapping from a character to an index, but if you're attempting to always support all of the characters that a font supports you would have to do that
+character to index query for all possible characters and then check all of the results and see which ones are available.
+</p>
+<p>
+If that doesn't sound like an option your only other choice is to keep around the instance of the DirectWrite <code>IDWriteFontFace</code> for your font 
+and pass the query through it whenever a character to index lookup needs to happen.  I don't consider this the ideal solution because now we have to 
+interact with the API at render time not just at bake time, but it does satisfy the requirement that if the font supports the character we support it too.
+The good news is you don't have to keep all of the other interfaces alive.  For instance you can create and throw away the factory that was used to create
+the font face, and the font face will continue to work.  You're only comitting to manually freeing one interface if you use this method.
+</p>
+<p>
+Another option is to give up on the requirement of supporting all characters.  If instead you define a small set of characters that you need to support
+such that it is reasonable to perform the character to index query on all of your potential characters at bake time, then you can build the full lookup
+structure yourself at bake time and don't have to interact with the DirectWrite API at render time too.
+</p>
+<p>
+Finally there's the option of going to DirectWrite 1 which has the call you need in order to support all characters <i>and</i> build your own lookup structure
+at bake time. <a href="#highver_GetUnicodeRanges">Learn more about that option</a>.
+</p>
+<p>
+For the rasterizer presented here I will use the method of keeping the <code>IDWriteFontFace</code> alive for the duration of the font's use.
+</p>
+<p>
+<b>Handling sub-pixel orientation (i.e. pixel geometry) and multi-monitor support</b>
+</p>
+<p>
+A screen is not necessarily oriented such that it's sub-pixels are ordered, from left to right as RGB.  I could, right now, mount any one of my monitors upsidedown
+and then tell windows to rotate the output to the monitor by 180 degrees, and I would suddenly have a BGR oriented monitor.  The DirectWrite API refers to this
+orientation as pixel geometry, and there is a parameter in the render parameters we pass to a DirectWrite draw call that tell it what orientation we want it to
+render.  For the example rasterizer, multi-monitor support is not included, but if we wanted to include it we would have a little bit of extra work to do.
+In a multi-monitor setup, it is possible that one monitor is RGB while another is BGR.  After baking a ClearType texture for RGB, rendering with the exact same
+rules to a BGR monitor will create obvious color fringing.  There is really only one solution that I think is worth offering for this problem.
+</p>
+<p>
+To do multi-monitor support, always bake a RGB, no matter what any of the monitors' orientations are, and then dispatch to two different shaders depending on
+the orientation of the current host monitor for the window.  BGR variant of the shader only needs to swap the first and last channel once at some point.
+</p>
+<p>
+The more tricky part is the process of figuring out the appropriate orientation for the current monitor.  This can be done by querying DirectWrite via
+the <code>CreateMonitorRenderingParams</code> call, or by looking up the registry keys under <code>Software\Microsoft\Avalon.Graphics\</code>.  Note that
+DirectWrite just reads from those keys anyway, BUT if the keys are missing DirectWrite fills in some defaults and doesn't tell you that the keys are missing.
+The registry keys in question are set when a user runs the ClearType tuner application.
+</p>
+
+<p>
+<h2 id="section_example_rasterizer">The Example Rasterizer</h2>
+</p>
+<p>
+The relevant files of the rasterizer example are:
+</p>
+<div><a target="_blank" href="example_rasterizer.cpp">example_rasterizer.cpp</a></div>
+<div><a target="_blank" href="example_gl_funcs.h">example_gl_funcs.h</a></div>
+<div><a target="_blank" href="example_gl_defines.h">example_gl_defines.h</a></div>
+<div><a target="_blank" href="example_rasterizer_vert.glsl">example_rasterizer_vert.glsl</a></div>
+<div><a target="_blank" href="example_rasterizer_frag.glsl">example_rasterizer_frag.glsl</a></div>
+
+<p>
+<h3>Key Points of Interest</h3>
+</p>
+<p>
+It takes a lot of code to get a modern OpenGL enabled window open on windows, and even more code to load up the OpenGL features we actually need.  For
+demonstrating a DirectWrite based rasterizer, all of that is a distraction, so this section will point directly to the areas of the example that are worth
+reviewing.  All code snippets are pulled from <a target="_blank" href="example_rasterizer.cpp">example_rasterizer.cpp</a>.
+</p>
+<p>
+<b>Renderer Setup</b>
+</p>
+<p>
+Search for <code>// OpenGL Setup</code> to find the initialization of OpenGL's state.
+</p>
+<p>
+The settings set here that are unique and critical to our rasterizer occur in this portion of the OpenGL Setup:
+<pre><code>// Settings
+glEnable(GL_FRAMEBUFFER_SRGB);
+glEnable(GL_BLEND);
+glBlendFunc(GL_CONSTANT_COLOR, GL_ONE_MINUS_SRC_COLOR);
+
+// sRGB Framebuffer
+GLuint frame_texture = 0;
+glGenTextures(1, &amp;frame_texture);
+glBindTexture(GL_TEXTURE_2D, frame_texture);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, window_width, window_height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+glGenFramebuffers(1, &amp;framebuffer);
+glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frame_texture, 0);
+GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+assert(status == GL_FRAMEBUFFER_COMPLETE);
+</pre></code>
+In particular this sets up our renderer for gamma correction with and sets up the unique blend function so that our shader can return a per-channel blending mask.
+</p>
+
+<p>
+<b>Font Data</b>
+</p>
+<p>
+The data structure that will represent a baked font:
+<pre><code>// Font Data Structure
+
+struct Glyph_Metrics{
+    float off_x;
+    float off_y;
+    float advance;
+    float xy_w;
+    float xy_h;
+    float uv_w;
+    float uv_h;
+};
+
+struct Baked_Font{
+    IDWriteFontFace *face;
+    GLuint texture;
+    Glyph_Metrics *metrics;
+    int32_t glyph_count;
+};</code></pre>
+Notice that <code>Baked_Font</code> stores the <code>IDWriteFontFace</code> which it will need to convert strings into sequences of glyph indices.
+</p>
+
+<p>
+<b>Font Bake Phase</b>
+</p>
+<p>
+Search for <code>// Font Setup</code> to find the code that bakes the font into a texture atlas.  A notable challenge with this baker is that precise information
+about the bounding box of a glyph can only be retrieved after rendering the glyph.  This means getting a full list of rectangles for a rectangle packing optimizer
+will be more expensive than it should be, but it is still doable.  This example does nothing to be careful or to conserve space and shouldn't be thought of as
+a useful part of this example.
+</p>
+
+<p>
+<b>Font Design Units</b>
+</p>
+<p>
+Font metrics come back in design units.  The documentation on converting to pixel units or any other unit we might can be pretty confusing, so we'll take
+a quick moment to lay out how it all fits together.  Note that these are meanings of these units according to this particular Microsoft API.  This mental
+model does not necessarily translate anywhere else.
+</p>
+<table border=1 cellspacing=0 cellpadding=4>
+<tr><th>Unit</th>        <th>Description</th>
+    <th>Conversion to Pixels</th></tr>
+<tr><td>Design Unit</td> <td>An abstract unit of glyph geometry, independent of screen, or text size, and varies in resolution between fonts.</td>
+    <td><b>DesignUnit</b> * Em/DesignUnit * Point/Em * Inch/Point * Pixel/Inch</td></tr>
+<tr><td>Em</td> <td>A unit that scales relative to the visual size of text.  One Em is usually about the width of a capital M.</td>
+    <td><b>Em</b> * Point/Em * Inch/Point * Pixel/Inch</td></tr>
+<tr><td>Point</td> <td>A fixed unit of physical length.  1 Point = 1/72 Inch</td>
+    <td><b>Point</b> * Inch/Point * Pixel/Inch</td></tr>
+<tr><td>DesignUnit/Em</td> <td>The scale of a font's design unit.  Found in <code>font_metrics.designUnitsPerEm</code>.</td>
+    <td>(DesignUnit / (<b>DesignUnit/Em</b>)) * Point/Em * Inch/Point * Pixel/Inch</td></tr>
+<tr><td>Point/Em</td> <td>The point size of text.  For 12 pt text, there are 12 Point/Em.</td>
+    <td>Em * <b>Point/Em</b> * Inch/Point * Pixel/Inch</td></tr>
+<tr><td>Inch/Point</td> <td>Always 1/72</td>
+    <td>Point * <b>Inch/Point</b> * Pixel/Inch</td></tr>
+<tr><td>Pixel/Inch</td> <td>Otherwise known as the DPI.  Default to 96 if you are not creating a DPI aware application.</td>
+    <td>Inch * <b>Pixel/Inch</b></td></tr>
+</table>
+<p>
+In the example, the code that handles these conversions is:
+</p>
+<pre><code>float pixel_per_em = point_size*(1.f/72.f)*dpi;
+float pixel_per_design_unit = pixel_per_em/((float)font_metrics.designUnitsPerEm);</pre></code>
+<p>
+Since most metrics come in design units, we can now convert to pixels by just multiplying by <code>pixel_per_design_unit</code> however we also need
+to save <code>pixel_per_em</code> because the call <code>DrawGlyphRun</code> wants to know the font size in pixels per em.
+(See the line <code>glyph_run.fontEmSize = pixel_per_em;</code>)
+</p>
+
+<p>
+<b>Drawing Strings (<code>draw_string</code></b>
+</p>
+<p>
+The <code>draw_string</code> call starts by iterating the ASCII input text one character at a time to build the index array:
+</p>
+<pre><code>int32_t length = 0;
+for (; text[length] != 0; length += 1);
+uint16_t *indices = (uint16_t*)malloc(sizeof(uint16_t)*length);
+
+for (int32_t i = 0; i < length; i += 1){
+    uint32_t codepoint = (uint32_t)text[i];
+    font.face->GetGlyphIndices(&codepoint, 1, &indices[i]);
+}
+</code></pre>
+<p>
+Notice that this API, <code>GetGlyphIndices</code>, takes it's text as a 32-bit codepoint array, not as a UCS2 string which is the usual for Microsoft APIs.
+This is nice in that it means you don't have to encode UTF-16 to do the index lookup, but the text rendering routine would be improved by an optimized unicode
+translation routine anyway.
+</p>
+<p>
+Later in that call we build the M value table:
+</p>
+<pre><code>// Compute M Values
+float V = r*0.5f + g + b*0.1875f;
+float M_value_table[7];
+
+static float Cmax_table[] = {
+    0.f,
+    0.380392157f,
+    0.600000000f,
+    0.749019608f,
+    0.854901961f,
+    0.937254902f,
+    1.f,
+};
+static float Cmin_table[] = {
+    0.f,
+    0.166666667f,
+    0.333333333f,
+    0.500000000f,
+    0.666666667f,
+    0.833333333f,
+    1.f,
+};
+
+static float A = 0.839215686374509f; // 214/255
+static float B = 1.266666666666667f; // 323/255
+float L = (V - A)/(B - A);
+
+M_value_table[0] = 0.f;
+for (int32_t i = 1; i <= 5; i += 1){
+    float Cmax = Cmax_table[i];
+    float Cmin = Cmin_table[i];
+    float M = Cmax + (Cmin - Cmax)*L;
+    if (M > Cmax){
+        M = Cmax;
+    }
+    if (M < Cmin){
+        M = Cmin;
+    }
+    M_value_table[i] = M*a;
+}
+M_value_table[6] = a;
+</code></pre>
+<p>
+Review <a href="#section_blendcurve">Blending for DirectWrite</a> for an explanation of what this code is computing.
+</p>
+
+
+<p>
+<h2 id="section_higher_verions">Options Available in Higher Versions</h2>
+</p>
+<p>
+<small>Bonus Section: Not necessary for main DirectWrite rasterizer example</small>
+</p>
+<p>
+<h3>How to Use Higher Versions</h3>
+</p>
+<p>
+If you want to use a version of DirectWrite besides the original, there are a couple of steps to take.
+First you should look at the <a href="#dep_version_table">version table</a> to determine the header and library files you need to include and link,
+also make sure you're okay with the OS restrictions while you're there.  Second you have to alter the code that gets the interface with upgraded
+features that you need, as well as any interface that helps you create or get the interfaces you care about, this means you will always start by
+upgarding the factory interface:
+</p>
+<pre><code>IDWriteFactory<b style="color:red;"><u>1</u></b> *dwrite_factory = 0;
+HRESULT error = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory<b style="color:red;"><u>1</u></b>), (IUnknown**)&amp;dwrite_factory);
+DeferRelease(dwrite_factory);
+DWCheckPtr(error, dwrite_factory, assert(!&quot;factory&quot;));
+</pre></code>
+<p>
+All of the interfaces this factory returns will support DirectWrite 1, but the types do not always reflect this.  When you use this factory to get
+a font face for instance, it will still be an <code>IDWriteFontFace</code> as if you used a "version 0" factory, but we can then use
+<code>QueryInterface</code> to get the version of the interface we wanted.
+</p>
+<pre><code>
+IDWriteFontFace<b style="color:red;"><u>1</u></b> *font_face_1 = 0;
+HRESULT error = font_face-&gt;QueryInterface(&amp;font_face_1);
+DeferRelease(font_face_1);
+DWCheckPtr(error, font_face_1, assert(!&quot;font face 1&quot;));
+</pre></code>
+<p>
+Be aware that the numbers following the interface types do not necessarily match up with their DirectWrite version number, and two interfaces in the
+same version may have different numbers.  For example <code>IDWriteFontCollection1</code> is introduced in DirectWrite 3 and requires an
+<code>IDWriteFactory3</code> which has a special method for obtaining the <code>IDWriteFontCollection1</code> instead of the 
+<code>IDWriteFontCollection</code>.  Because the versions are so complicated and frankly disorganized, you have to figure out on a case by case basis
+which version you need for which interface and how the API wants you to get to that interface.
+</p>
+
+<p>
+<h3 id="highver_GetUnicodeRanges">Using GetUnicodeRanges at Bake Time</h3>
+</p>
+<p>
+In DirectWrite 1, font faces have a few new features, including <code>GetUnicodeRanges</code> which will return an array of ranges fully describing
+the set of characters the font supports.  With this feature you can now do all of the character to index queries once at bake time, build a lookup
+structure of your own, and discard the font face afterwards.  To use this method you have to use a version 1 factory and turn your font face into a
+version 1 font face.  Once you have the <code>IDWriteFontFace1</code> the following code gets the set of unicode ranges:
+</p>
+<pre><code>uint32_t range_count = 0;
+HRESULT error = font_face_1-&gt;GetUnicodeRanges(0, 0, &amp;range_count);
+DWCheck(error, assert(!&quot;GetUnicodeRanges&quot;));
+// alloc ranges : DWRITE_UNICODE_RANGE[range_count]
+error = font_face_1-&gt;GetUnicodeRanges(range_count, ranges, &amp;range_count); 
+DWCheck(error, assert(!&quot;GetUnicodeRanges&quot;));
+for (uint32_t range_i = 0; range_i < range_count; range_i += 1){
+    for (uint32_t character = ranges[range_i].first; character <= ranges[range_i].last; character += 1){
+        // whatever it takes to build the character to index lookup
+    }
+}
+</code></pre>
+
+<p>
+<h3 id="highver_antialiasmode">BitmapRenderTarget Anti-Alias Mode</h3>
+</p>
+<p>
+At higher level portions of the DirectWrite API, in particular with the integration to D2D, there is a setting called anti-alias mode hich allows you to
+turn ClearType on and off on a case by case basis.  The low level APIs in DirectWrite do not support the same feature.  You can change the "ClearType level"
+in the rendering parameters to 0.f, which should have the same effect.  The only annoying part of this is that you have to create two rendering parameter
+interfaces to switch between them since the rendering parameter is imutable after creation.  Alternatively, in DirectWrite 1, you can render with an
+<code>IDWriteBitmapRenderTarget1</code> which has a <code>SetTextAntialiasMode</code> so that you can alter this setting per-call like you could with higher
+level APIs.
+</p>
+
+<p>
+<h3 id="highver_FontMetadata">Getting Font Metadata From TTF Based Fonts</h3>
+</p>
+<p>
+In DirectWrite 3 it becomes possible get information like style and font family from a directly supplied ttf file.  Getting information this way is always
+slightly unreliable because the ttf format does not require that this information be included, and has very loose restrictions on formats.  However, for the
+vast majority of ttf files it does work.  To use this method you will need to create an <code>IDWriteFactory3</code> and use the <code>QueryInterface</code>
+method to get an <code>IDWriteFontFace3</code> from a regular font face.  Then you have access to methods for getting the family name, face name, style and weight.
+</p>
+<p>
+When you try to get a name what is actually returned to you is an interface representing the mapping from locale strings to name strings, this interface is called
+<code>IDWriteLocalizedStrings</code>.  Once you have this interface you need to figure out the index to the locale you want, then you can get the
+string's length and contents:
+</p>
+<pre><code>uint32_t index = 0;
+BOOL exists = false;
+HRESULT error = localized_strings-&gt;FindLocaleName(L&quot;en-US&quot;, &amp;index, &amp;exists);
+assert(error == S_OK);
+assert(exists);
+uint32_t length = 0;
+error = localized_strings-&gt;GetStringLength(index, &amp;length);
+assert(error == S_OK);
+// alloc str : wchar_t[length + 1]
+error = localized_strings-&gt;GetString(index, str, length + 1);
+assert(error == S_OK);
+</code></pre>
+
+</body>
+</html>

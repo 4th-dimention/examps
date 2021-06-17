@@ -53,17 +53,23 @@ WinMain(HINSTANCE hInstance,
     print_hz();
     printf("Same File Twice:\n");
     
+#if 1
+#define FILE_NAME L"test_data\\text_file.txt"
+#else
+#define FILE_NAME L"test_data\\text_file_protected.txt"
+#endif
+    
     for (int f1a = 0; f1a < ArrayCount(access_params); f1a += 1){
         for (int f1s = 0; f1s < ArrayCount(share_params); f1s += 1){
             for (int f2a = 0; f2a < ArrayCount(access_params); f2a += 1){
                 for (int f2s = 0; f2s < ArrayCount(share_params); f2s += 1){
                     printf("h1: access=%s; share=%s;\n", access_params[f1a].name, share_params[f1s].name);
-                    HANDLE h1 = CreateFileW(L"test_data\\text_file.txt",
+                    HANDLE h1 = CreateFileW(FILE_NAME,
                                             access_params[f1a].val, share_params[f1s].val,
                                             0, OPEN_EXISTING, 0, 0);
                     
                     printf("h2: access=%s; share=%s;\n", access_params[f2a].name, share_params[f2s].name);
-                    HANDLE h2 = CreateFileW(L"test_data\\text_file.txt",
+                    HANDLE h2 = CreateFileW(FILE_NAME,
                                             access_params[f2a].val, share_params[f2s].val,
                                             0, OPEN_EXISTING, 0, 0);
                     
