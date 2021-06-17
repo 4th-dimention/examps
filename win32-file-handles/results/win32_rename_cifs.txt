@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+Rename test:
+- MoveFileEx:
+volume = e1841fc3 id_high = 0 id_low = 7e1037
+File does not match NEW_NAME
+volume = e1841fc3 id_high = 0 id_low = 7e1037
+
+- SetFileInformationByHandle:
+volume = e1841fc3 id_high = 0 id_low = 7e102b
+File does not match NEW_NAME
+volume = e1841fc3 id_high = 0 id_low = 7e102b
+

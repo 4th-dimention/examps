@@ -1,0 +1,2 @@
+Run the scripts in order:
+00-create_fs.sh, 01-mount_fs.sh, 02-run_tests.sh, 03-umount_fs.sh

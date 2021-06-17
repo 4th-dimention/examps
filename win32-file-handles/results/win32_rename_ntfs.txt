@@ -1,0 +1,10 @@
+----------------------------------------------------------------
+Rename test:
+- MoveFileEx:
+volume = b494d4aa id_high = 370000 id_low = 11f5c
+volume = b494d4aa id_high = 370000 id_low = 11f5c
+
+- SetFileInformationByHandle:
+volume = b494d4aa id_high = 360000 id_low = bcc6
+volume = b494d4aa id_high = 360000 id_low = bcc6
+

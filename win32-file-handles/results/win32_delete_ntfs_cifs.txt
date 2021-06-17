@@ -1,0 +1,6 @@
+----------------------------------------------------------------
+Delete test:
+- DeleteFile:
+
+- SetFileInformationByHandle:
+
